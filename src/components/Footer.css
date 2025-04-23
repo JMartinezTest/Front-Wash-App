@@ -1,20 +1,27 @@
+.footer {
+  background: #111;
+  padding: 12px 0;
+  text-align: center;
+  border-top: 1px solid #00b4d8;
+}
 
-footer {
-    background-color:rgb(49, 51, 49); /* Color de fondo del footer */
-    text-align: center; /* Centrar el texto */
-    padding: 20px; /* Espacio alrededor del contenido */
-    position: relative; /* Para el posicionamiento */
-    bottom: 0; /* Asegura que esté al final */
-    width: 100%; /* Asegura que el footer ocupe todo el ancho */
-  }
-  
-  .footer-image {
-    max-width: 100%; /* Ajustar la imagen al tamaño del footer */
-    height: auto; /* Mantener la proporción de la imagen */
-    margin-bottom: 10px; /* Espacio entre la imagen y el texto */
-  }
-  
-  footer p {
-    color: white; /* Color del texto */
-    margin: 0; /* Eliminar margen por defecto */
-  }
+.footer-icons {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 5px;
+}
+
+.footer-icon {
+  font-size: 1.4rem;
+  transition: transform 0.3s;
+}
+
+.footer-icon:hover {
+  transform: scale(1.15);
+}
+
+.footer-copyright {
+  font-size: 0.7rem;
+  color: #777;
+}

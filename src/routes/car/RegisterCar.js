@@ -10,7 +10,7 @@ const RegisterCar = () => {
   const handleRegisterCar = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/cars/register', {
+      const response = await fetch('http://localhost:8081/cars/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
