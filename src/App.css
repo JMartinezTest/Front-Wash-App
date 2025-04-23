@@ -1,0 +1,261 @@
+body {
+  font-family: "Roboto", sans-serif;
+  background-image: url("https://img.freepik.com/fotos-premium/coche-negro-carretera-render-3d-e-ilustracion_37416-493.jpg?w=900");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  color: #2ce026;
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+
+h3 {
+  color: #2ce026;
+  text-align: left;
+  margin-bottom: 20px;
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+
+.container {
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 3px solid #fa25fa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+  height: 100dvh;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+/* .container::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border: 2px solid #ff3fcc;
+  border-radius: 15px;
+  pointer-events: none;
+  
+}  */
+
+.otherContainer{
+  overflow: auto;
+  display: flex;
+  flex: 1;
+  justify-content:center;
+  width: 100%;
+}
+
+.routerContainer{
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #cfd8dc;
+  border-radius: 5px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus {
+  border-color: #00796b;
+  box-shadow: 0 0 5px rgba(0, 121, 107, 0.5);
+  outline: none;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background-color: #88ff19;
+  transform: translateY(-2px);
+}
+
+.error,
+.success {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: green;
+}
+
+.clients-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 3px solid #00796b;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.clients-container h2,
+.clients-container h3,
+.clients-container h4 {
+  color: #0b9efa;
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+
+.clients-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.clients-table th,
+.clients-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.clients-table th {
+  background-color: #4caf50;
+  color: white;
+}
+
+.clients-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.clients-table tr:hover {
+  background-color: #ddd;
+}
+
+.client-item button {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.client-item button:hover {
+  background-color: #ff4d4d;
+}
+
+/* CSS para la lista de autos */
+.cars-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cars-table th,
+.cars-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.cars-table th {
+  background-color: #4caf50; /* Color del encabezado */
+  color: white;
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+
+.cars-table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Color de filas alternas */
+}
+
+.cars-table tr:hover {
+  background-color: #ddd; /* Color al pasar el ratón sobre la fila */
+}
+
+.cars-table .delete-button {
+  background-color: #ff6b6b; /* Color de botón de eliminar */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cars-table .delete-button:hover {
+  background-color: #ff4d4d; /* Color de botón al pasar el ratón */
+}
+
+/* Estilo para la tabla de empleados */
+.employees-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.employees-table th,
+.employees-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.employees-table th {
+  background-color: #4caf50; /* Color del encabezado */
+  color: white;
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+
+.employees-table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Color de filas alternas */
+}
+
+.employees-table tr:hover {
+  background-color: #ddd; /* Color al pasar el ratón sobre la fila */
+}
+
+.employees-table .delete-button {
+  background-color: #ff6b6b; /* Color de botón de eliminar */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.employees-table .delete-button:hover {
+  background-color: #ff4d4d; /* Color de botón al pasar el ratón */
+}
