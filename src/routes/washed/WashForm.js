@@ -69,12 +69,11 @@ const WashForm = () => {
         setSuccessMessage('Lavado registrado correctamente');
         setFormData({
           date: new Date().toISOString().split('T')[0],
-          clientId: '',
-          carId: '',
-          serviceId: '',
           employeeId: '',
-          observations: '',
-          total: 0
+          carId: '',
+          serviceId: ''/* ,
+          clientId: '',
+          observations: '' */,
         });
       }
       

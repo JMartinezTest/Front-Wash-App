@@ -19,7 +19,7 @@ const Form = ({
         {fields.map((field) => (
           <div key={field.name} className="form-group">
             <label htmlFor={field.name}>{field.label}</label>
-            <input
+            {!Object.keys(field).includes('options')  && <input
               id={field.name}
               type={field.type || 'text'}
                name={field.name} 
@@ -27,7 +27,12 @@ const Form = ({
               value={field.value}
               onChange={field.onChange}
               required={field.required !== false}
-            />
+            />}
+            {Object.keys(field).includes('options')&& <select>
+              {field.options.map((opt)=>(
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+              </select>}
           </div>
         ))}
         <button type="submit" className="form-submit-button">
