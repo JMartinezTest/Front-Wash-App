@@ -15,7 +15,7 @@ const RegisterEmployee = () => {
   const handleRegisterEmployee = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/employees/register', {
+      const response = await fetch('http://localhost:8081/employees/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
