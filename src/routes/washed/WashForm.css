@@ -27,6 +27,110 @@
     border-radius: 3px;
 }
 
+/* Estilos para la selección de servicios */
+.services-selection {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.available-services,
+.selected-services {
+    flex: 1;
+    min-width: 300px;
+}
+
+.services-selection h4 {
+    color: #2c3e50;
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+}
+
+.available-services select {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-size: 0.95rem;
+}
+
+.selected-services ul {
+    list-style: none;
+    padding: 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-height: 200px;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+}
+
+.selected-services li {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.selected-services li:hover {
+    background-color: #f0f0f0;
+}
+
+.selected-services li button {
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.selected-services li button:hover {
+    background: #cc0000;
+}
+
+.total-section {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f5f7fa, #e4e8eb);
+    text-align: right;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.service-button {
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.service-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 /* Adaptación para móviles */
 @media (max-width: 768px) {
     .wash-form-container {
@@ -37,5 +141,20 @@
     .wash-form-container h2::after {
         left: 20%;
         width: 60%;
+    }
+
+    .services-selection {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .available-services,
+    .selected-services {
+        min-width: 100%;
+    }
+
+    .service-button {
+        width: 100%;
+        justify-content: center;
     }
 }

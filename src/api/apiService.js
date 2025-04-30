@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8081";
+const API_BASE_URL = "http://localhost:8080";
 
 const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
@@ -75,18 +75,36 @@ export const apiService = {
     }),
 
   // Lavados
-  getWashedRecords: () => fetchWithAuth("/washed-records"),
+  getWashedRecords: () => fetchWithAuth("/washed"),
+  getWashedRecord: (id) => fetchWithAuth(`/washed/${id}`),
   registerWashed: (record) =>
-    fetchWithAuth("/washed-records/register", {
+    fetchWithAuth("/washed/register", {
       method: "POST",
-      body: JSON.stringify(record),
+      body: JSON.stringify({
+        client: record.clientId,
+        employee: record.employeeId,
+        car: record.carId,
+        servicesOffered: record.serviceIds,
+        total: record.total,
+      }),
     }),
+  updateWashedRecord: (id, record) =>
+    fetchWithAuth(`/washed/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        client: record.clientId,
+        employee: record.employeeId,
+        car: record.carId,
+        servicesOffered: record.serviceIds,
+        total: record.total,
+      }),
+    }),
+  deleteWashedRecord: (id) =>
+    fetchWithAuth(`/washed/${id}`, { method: "DELETE" }),
+
   // En apiService.js, agregar estos métodos al objeto exportado
-  registerPayment: (payment) =>
-    fetchWithAuth("/payments/register", {
-      method: "POST",
-      body: JSON.stringify(payment),
-    }),
-  getPayments: () => fetchWithAuth("/payments"),
-  getPayment: (id) => fetchWithAuth(`/payments/${id}`),
+  calculateEmployeePayment: (employeeId, startDate, endDate) =>
+    fetchWithAuth(
+      `/washed/employee/${employeeId}/payment?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+    ,{ method: "GET" }),
 };

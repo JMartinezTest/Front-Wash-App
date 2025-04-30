@@ -19,20 +19,43 @@ const Form = ({
         {fields.map((field) => (
           <div key={field.name} className="form-group">
             <label htmlFor={field.name}>{field.label}</label>
-            {!Object.keys(field).includes('options')  && <input
-              id={field.name}
-              type={field.type || 'text'}
-               name={field.name} 
-              placeholder={field.placeholder}
-              value={field.value}
-              onChange={field.onChange}
-              required={field.required !== false}
-            />}
-            {Object.keys(field).includes('options')&& <select>
-              {field.options.map((opt)=>(
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-              </select>}
+            
+            {field.type === 'select' ? (
+              <select
+                id={field.name}
+                name={field.name}
+                value={field.value || ''}
+                onChange={field.onChange}
+                required={field.required}
+              >
+                <option value="">Seleccione...</option>
+                {field.options.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            ) : field.type === 'textarea' ? (
+              <textarea
+                id={field.name}
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                required={field.required}
+              />
+            ) : (
+              <input
+                id={field.name}
+                type={field.type || 'text'}
+                name={field.name}
+                placeholder={field.placeholder}
+                value={field.value}
+                onChange={field.onChange}
+                required={field.required}
+                readOnly={field.readOnly}
+                step={field.step}
+              />
+            )}
           </div>
         ))}
         <button type="submit" className="form-submit-button">

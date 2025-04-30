@@ -7,7 +7,6 @@ import Employees from "./Employee/Employees";
 import RegisterEmployees from "./Employee/RegisterEmployee";
 import Client from "./client/Client";
 import RegisterClient from "./client/RegisterClient";
-import RegisterWashed from "./washed/RegisterWashed";
 import Payment from "./washed/Payment";
 import EmployeeForm from "./Employee/employeeForm";
 import CarForm from "./car/carForm";
@@ -15,6 +14,7 @@ import ServiceForm from "./service-offered/serviceForm";
 import ClientForm from "./client/ClientForm";
 import WashHistory from "./washed/WashHistory";
 import WashForm from "./washed/WashForm";
+import EmployeePayments from "./Employee/EmployeePayments";
 
 const createProtectedElement = (Component) => (
   <ProtectedRoute>
@@ -51,7 +51,7 @@ const PrivateRoutes = [
   { path: "/washes", element: createProtectedElement(WashHistory) },
   { path: "/washes/new", element: createProtectedElement(WashForm) },
   { path: "/washes/edit/:id", element: createProtectedElement(WashForm) },
-  { path: "/payments", element: createProtectedElement(Payment) },
+  { path: "/payments", element: createProtectedElement(EmployeePayments) },
 ];
 
 export default PrivateRoutes;
