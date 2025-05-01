@@ -9,9 +9,23 @@ const EmployeePayments = () => {
   const [payments, setPayments] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
   const [selectedEmployee, setSelectedEmployee] = useState("");
+
+  // Función para obtener el rango de fechas por defecto (1 mes atrás hasta hoy)
+  const getDefaultDateRange = () => {
+    const endDate = new Date();
+    const startDate = new Date();
+
+    // Ajustar fechas para cubrir todo el día
+    startDate.setMonth(endDate.getMonth() - 1);
+    startDate.setHours(0, 0, 0, 0); // Inicio del día
+    endDate.setHours(23, 59, 59, 999); // Final del día
+
+    return [startDate, endDate];
+  };
+
+  const [dateRange, setDateRange] = useState(getDefaultDateRange());
+  const [startDate, endDate] = dateRange;
 
   const fetchData = async () => {
     try {
@@ -28,10 +42,17 @@ const EmployeePayments = () => {
     try {
       if (!selectedEmployee) return;
 
+      // Asegurar que las fechas cubran todo el día
+      const adjustedStart = new Date(startDate);
+      adjustedStart.setHours(0, 0, 0, 0);
+
+      const adjustedEnd = new Date(endDate);
+      adjustedEnd.setHours(23, 59, 59, 999);
+
       const paymentsData = await apiService.calculateEmployeePayment(
         selectedEmployee,
-        startDate,
-        endDate
+        adjustedStart,
+        adjustedEnd
       );
 
       setPayments([
@@ -40,7 +61,7 @@ const EmployeePayments = () => {
           employee:
             employees.find((e) => e.id === selectedEmployee)?.name ||
             selectedEmployee,
-          period: `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`,
+          period: `${adjustedStart.toLocaleDateString()} - ${adjustedEnd.toLocaleDateString()}`,
           total: paymentsData,
           details: `Pago calculado al ${new Date().toLocaleDateString()}`,
         },
@@ -53,6 +74,12 @@ const EmployeePayments = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleDateRangeChange = (update) => {
+    if (update[0] && update[1]) {
+      setDateRange(update);
+    }
+  };
 
   const columns = [
     { key: "employee", title: "Empleado" },
@@ -69,52 +96,69 @@ const EmployeePayments = () => {
 
   return (
     <div className="page-container">
-      <div className="page-header">
-        <h2>Cálculo de Pagos a Empleados</h2>
-      </div>
-
-      <div className="payment-controls">
-        <div className="form-group">
-          <label>Empleado:</label>
-          <select
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
-          >
-            <option value="">Seleccionar empleado</option>
-            {employees.map((employee) => (
-              <option key={employee.id} value={employee.id}>
-                {employee.name} {employee.lastName}
-              </option>
-            ))}
-          </select>
+      <div>
+        <div className="page-header">
+          <h2>Cálculo de Pagos a Empleados</h2>
         </div>
 
-        <div className="form-group">
-          <label>Fecha Inicio:</label>
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-          />
+        <div className="date-range-info">
+          <p>
+            <strong>Periodo seleccionado:</strong>{" "}
+            {startDate.toLocaleDateString()} - {endDate.toLocaleDateString()}
+          </p>
+          <p>
+            <small>
+              Duración:{" "}
+              {Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24))} días
+            </small>
+          </p>
         </div>
+        <div className="payment-controls">
+          <div className="form-group">
+            <label>Empleado:</label>
+            <select
+              value={selectedEmployee}
+              onChange={(e) => setSelectedEmployee(e.target.value)}
+            >
+              <option value="">Seleccionar empleado</option>
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.id}>
+                  {employee.name} {employee.lastName}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="form-group">
-          <label>Fecha Fin:</label>
-          <DatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate}
-          />
+          <div className="form-group">
+            <label>Fecha Inicio:</label>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => handleDateRangeChange([date, endDate])}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              maxDate={new Date()}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Fecha Fin:</label>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => handleDateRangeChange([startDate, date])}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+              maxDate={new Date()}
+            />
+          </div>
+          <div className="form-button">
+            <button onClick={calculatePayments} disabled={!selectedEmployee}>
+              Calcular Pago
+            </button>
+          </div>
         </div>
-
-        <button onClick={calculatePayments} disabled={!selectedEmployee}>
-          Calcular Pago
-        </button>
       </div>
 
       <DataTable

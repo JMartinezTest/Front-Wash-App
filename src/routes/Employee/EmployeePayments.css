@@ -15,18 +15,17 @@
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
-  align-items: center;
-  justify-content: end;
   background-color: #ddd;
-  padding: 10 20;
+  padding: 10 20 0;
 }
 
 .form-group {
   display: flex;
-  flex: 1;
   flex-direction: column;
   min-width: 200px;
+} 
+.form-button {
+  padding-top: 1.3rem;
 }
 
 .form-group label {
@@ -58,4 +57,11 @@ button:disabled {
 
 .react-datepicker-wrapper {
   width: auto;
+}
+
+.date-range-info {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  color:aliceblue
 }
