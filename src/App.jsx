@@ -8,12 +8,9 @@ import Footer from "./components/Footer";
 import NotFound from "./routes/NotFound";
 import { useContext } from "react";
 import AuthContext from "./auth/authContext";
-import LoginPage from "./auth/LoginPage";
 
 const AppContent = () => {
   const { isAuthenticated } = useContext(AuthContext);
-
-  if (!isAuthenticated) return <LoginPage />;
 
   return (
     <div className="routerContainer">
@@ -47,4 +44,3 @@ const App = () => {
 };
 
 export default App;
-

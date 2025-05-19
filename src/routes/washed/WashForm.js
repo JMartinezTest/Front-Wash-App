@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiService } from "../../api/apiService";
-import Form from "../../components/Forms";
 import "./WashForm.css";
 
 const WashForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split("T")[0],
     clientId: "",
@@ -16,11 +16,11 @@ const WashForm = () => {
     observations: "",
     total: 0,
   });
+
   const [availableServices, setAvailableServices] = useState([]);
   const [selectedServices, setSelectedServices] = useState([]);
   const [clients, setClients] = useState([]);
   const [cars, setCars] = useState([]);
-  console.log(cars)
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(!!id);
   const [error, setError] = useState("");
@@ -29,19 +29,16 @@ const WashForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [clientsData, carsData, servicesData, employeesData] =
-          await Promise.all([
-            apiService.getClients(),
-            apiService.getCars(),
-            apiService.getServices(),
-            apiService.getEmployees(),
-          ]);
-
+        const [clientsData, carsData, servicesData, employeesData] = await Promise.all([
+          apiService.getClients(),
+          apiService.getCars(),
+          apiService.getServices(),
+          apiService.getEmployees(),
+        ]);
         setClients(clientsData);
         setCars(carsData);
         setAvailableServices(servicesData);
         setEmployees(employeesData);
-
         if (id) {
           const washData = await apiService.getWashedRecord(id);
           const selected = servicesData.filter((service) =>
@@ -50,23 +47,18 @@ const WashForm = () => {
           setFormData(washData);
           setSelectedServices(selected);
         }
-
         setLoading(false);
       } catch (err) {
         setError(err.message);
         setLoading(false);
       }
     };
-
     fetchData();
   }, [id]);
 
-  // Calcular total cuando cambian los servicios seleccionados
+  // Calcular total
   useEffect(() => {
-    const newTotal = selectedServices.reduce(
-      (sum, service) => sum + service.price,
-      0
-    );
+    const newTotal = selectedServices.reduce((sum, service) => sum + service.price, 0);
     const serviceIds = selectedServices.map((service) => service.id);
     setFormData((prev) => ({
       ...prev,
@@ -90,7 +82,6 @@ const WashForm = () => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
-
     try {
       if (id) {
         await apiService.updateWashedRecord(id, formData);
@@ -107,7 +98,6 @@ const WashForm = () => {
         });
         setSelectedServices([]);
       }
-
       setTimeout(() => navigate("/washes"), 2000);
     } catch (err) {
       setError(err.message);
@@ -122,119 +112,135 @@ const WashForm = () => {
     }));
   };
 
-  const fields = [
-    {
-      name: "date",
-      label: "Fecha",
-      type: "date",
-      value: formData.date,
-      onChange: handleChange,
-      required: true,
-    },
-    {
-      name: "clientId",
-      label: "Cliente",
-      type: "select",
-      value: formData.clientId,
-      onChange: handleChange,
-      options: clients.map((client) => ({
-        value: client.id,
-        label: `${client.name} ${client.lastName} (${client.nit})`,
-      })),
-      required: true,
-    },
-    {
-      name: "carId",
-      label: "Vehículo",
-      type: "select",
-      value: formData.carId,
-      onChange: handleChange,
-      options: cars.map((car) => ({
-        value: car.id,
-        label: `${car.make} ${car.color} (${car.licencePlate})`,
-      })),
-      required: true,
-    },
-    {
-      name: "employeeId",
-      label: "Empleado",
-      type: "select",
-      value: formData.employeeId,
-      onChange: handleChange,
-      options: employees.map((employee) => ({
-        value: employee.id,
-        label: `${employee.name} ${employee.lastName}`,
-      })),
-      required: true,
-    },
-    {
-      name: "total",
-      label: "Total",
-      type: "number",
-      value: formData.total.toFixed(2),
-      readOnly: true,
-      required: true,
-    }, 
-  ];
-
   if (loading) {
-    return <div>Cargando datos del lavado...</div>;
+    return <div className="wash-form-card"><h2>Cargando datos...</h2></div>;
   }
 
   return (
-    <div className="wash-form-container">
-      <h2>{id ? "Editar Registro de Lavado" : "Registrar Nuevo Lavado"}</h2>
-
-      <div className="services-selection">
-        <h3>Selección de Servicios</h3>
-
-        <div className="available-services">
-          <h4>Servicios Disponibles</h4>
-          <select size="5" onChange={(e) => handleAddService(e.target.value)}>
-            {availableServices
-              .filter(
-                (service) => !selectedServices.some((s) => s.id === service.id)
-              )
-              .map((service) => (
-                <option key={service.id} value={service.id}>
-                  {service.name} - ${service.price}
-                </option>
-              ))}
-          </select>
-       
+    <div className="wash-form-card">
+      <h2>{id ? "Editar Lavado" : "Registrar Lavado"}</h2>
+      {error && <div className="error-message">{error}</div>}
+      {successMessage && <div className="success">{successMessage}</div>}
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Fecha</label>
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            required
+          />
         </div>
-
-        <div className="selected-services">
-          <h4>Servicios Seleccionados</h4>
-          {selectedServices.length === 0 ? (
-            <p>No hay servicios seleccionados</p>
-          ) : (
+        <div className="form-group">
+          <label>Cliente</label>
+          <select
+            name="clientId"
+            value={formData.clientId}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Selecciona un cliente</option>
+            {clients.map((client) => (
+              <option key={client.id} value={client.id}>
+                {client.name} {client.lastName} ({client.nit})
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Vehículo</label>
+          <select
+            name="carId"
+            value={formData.carId}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Selecciona un vehículo</option>
+            {cars.map((car) => (
+              <option key={car.id} value={car.id}>
+                {car.make} {car.color} ({car.licencePlate})
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Empleado</label>
+          <select
+            name="employeeId"
+            value={formData.employeeId}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Selecciona un empleado</option>
+            {employees.map((employee) => (
+              <option key={employee.id} value={employee.id}>
+                {employee.name} {employee.lastName}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* Selección de servicios */}
+        <div className="services-selection">
+          <div className="available-services">
+            <h4>Servicios Disponibles</h4>
+            <select
+              size={6}
+              onChange={(e) => handleAddService(e.target.value)}
+              value=""
+            >
+              <option value="" disabled>
+                Selecciona para agregar
+              </option>
+              {availableServices
+                .filter((s) => !selectedServices.some((ss) => ss.id === s.id))
+                .map((service) => (
+                  <option key={service.id} value={service.id}>
+                    {service.name} (${service.price})
+                  </option>
+                ))}
+            </select>
+         
+          </div>
+          <div className="selected-services">
+            <h4>Servicios Seleccionados</h4>
             <ul>
-              {selectedServices.map((service) => (
-                <li key={service.id}>
-                  {service.name} - ${service.price}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveService(service.id)}
-                  >
-                    ×
-                  </button>
-                </li>
-              ))}
+              {selectedServices.length === 0 ? (
+                <li style={{ color: "#888" }}>No hay servicios seleccionados</li>
+              ) : (
+                selectedServices.map((service) => (
+                  <li key={service.id}>
+                    {service.name} (${service.price})
+                    <button
+                      type="button"
+                      title="Quitar"
+                      onClick={() => handleRemoveService(service.id)}
+                    >
+                      ×
+                    </button>
+                  </li>
+                ))
+              )}
             </ul>
-          )}
-          <div className="total-section">
-            <strong>Total: ${formData.total.toFixed(2)}</strong>
           </div>
         </div>
-      </div>
-      <Form
-        fields={fields}
-        onSubmit={handleSubmit}
-        error={error}
-        successMessage={successMessage}
-        submitText={id ? "Actualizar Lavado" : "Registrar Lavado"}
-      />
+        <div className="total-section">
+          Total: ${formData.total.toFixed(2)}
+        </div>
+        <div className="form-group">
+          <label>Observaciones</label>
+          <textarea
+            name="observations"
+            value={formData.observations}
+            onChange={handleChange}
+            rows={2}
+            placeholder="Observaciones (opcional)"
+          />
+        </div>
+        <button type="submit" className="form-button">
+          {id ? "Actualizar" : "Guardar"}
+        </button>
+      </form>
     </div>
   );
 };

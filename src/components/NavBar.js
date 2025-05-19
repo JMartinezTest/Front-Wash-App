@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import AuthContext from '../auth/authContext';
-import './NavBar.css';
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import AuthContext from "../auth/authContext";
+import "./NavBar.css";
 
 const NavBar = () => {
   const { isAuthenticated, logout } = useContext(AuthContext);
@@ -9,7 +9,7 @@ const NavBar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   if (!isAuthenticated) return null;
@@ -18,8 +18,11 @@ const NavBar = () => {
     <nav className="navbar">
       <div className="navbar-brand">
         <Link to="/" className="logo-link">
-          <span className="logo-icon">🚗</span>
-          <span className="logo-text">Wash-App Pro</span>
+          <img
+            src="/images/mainlogo-cleanbg.png"
+            alt="Logo Empresa"
+            className="nav-logo"
+          />
         </Link>
       </div>
 

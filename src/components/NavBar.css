@@ -17,6 +17,7 @@
   align-items: center;
 }
 
+
 .logo-link {
   display: flex;
   align-items: center;
@@ -25,12 +26,18 @@
   font-weight: bold;
   font-size: 1.3rem;
   transition: all 0.3s ease;
+  height: 3rem;
 }
 
 .logo-link:hover {
   transform: scale(1.05);
 }
 
+.nav-logo{
+  width: 200px;
+  object-fit: cover;
+
+}
 .logo-icon {
   font-size: 1.8rem;
   margin-right: 0.5rem;

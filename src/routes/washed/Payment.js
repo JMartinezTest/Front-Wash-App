@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiService } from '../../api/apiService';
-import Form from '../../components/Forms';
 import './Payment.css';
 
 const Payment = () => {
@@ -20,7 +19,6 @@ const Payment = () => {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Cargar lavados disponibles si no se proporciona washId
   useEffect(() => {
     const fetchData = async () => {
       if (!washId) {
@@ -35,7 +33,6 @@ const Payment = () => {
         }
       }
     };
-
     fetchData();
   }, [washId]);
 
@@ -43,11 +40,9 @@ const Payment = () => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-
     try {
       await apiService.registerPayment(formData);
       setSuccessMessage('Pago registrado correctamente');
-      
       setTimeout(() => navigate('/payments'), 2000);
     } catch (err) {
       setError(err.message);
@@ -56,101 +51,103 @@ const Payment = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleNumberChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: parseFloat(value) || 0
-    }));
+    setFormData(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
   };
 
-  const fields = [
-    !washId && {
-      name: 'washId',
-      label: 'Lavado',
-      type: 'select',
-      value: formData.washId,
-      onChange: handleChange,
-      options: washes.map(wash => ({
-        value: wash.id,
-        label: `Lavado #${wash.id} - ${wash.clientName} ($${wash.total})`
-      })),
-      required: true
-    },
-    {
-      name: 'paymentDate',
-      label: 'Fecha de Pago',
-      type: 'date',
-      value: formData.paymentDate,
-      onChange: handleChange,
-      required: true
-    },
-    {
-      name: 'paymentMethod',
-      label: 'Método de Pago',
-      type: 'select',
-      value: formData.paymentMethod,
-      onChange: handleChange,
-      options: [
-        { value: 'cash', label: 'Efectivo' },
-        { value: 'credit_card', label: 'Tarjeta de Crédito' },
-        { value: 'debit_card', label: 'Tarjeta de Débito' },
-        { value: 'transfer', label: 'Transferencia Bancaria' }
-      ],
-      required: true
-    },
-    {
-      name: 'amount',
-      label: 'Monto',
-      type: 'number',
-      value: formData.amount,
-      onChange: handleNumberChange,
-      required: true,
-      step: "0.01"
-    },
-    {
-      name: 'reference',
-      label: 'Referencia/Número',
-      type: 'text',
-      value: formData.reference,
-      onChange: handleChange,
-      required: formData.paymentMethod !== 'cash'
-    },
-    {
-      name: 'notes',
-      label: 'Notas',
-      type: 'textarea',
-      value: formData.notes,
-      onChange: handleChange
-    }
-  ].filter(Boolean);
-
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Cargando datos...</p>
-      </div>
-    );
+    return <div className="payment-card"><h2>Cargando datos...</h2></div>;
   }
 
   return (
-    <div className="payment-container">
+    <div className="payment-card">
       <h2>Registrar Pago</h2>
-      
-      <Form
-        fields={fields}
-        onSubmit={handleSubmit}
-        error={error}
-        successMessage={successMessage}
-        submitText="Registrar Pago"
-      />
+      {error && <div className="error-message">{error}</div>}
+      {successMessage && <div className="success">{successMessage}</div>}
+      <form onSubmit={handleSubmit}>
+        {!washId && (
+          <div className="form-group">
+            <label>Lavado</label>
+            <select
+              name="washId"
+              value={formData.washId}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Selecciona un lavado</option>
+              {washes.map(wash => (
+                <option key={wash.id} value={wash.id}>
+                  Lavado #{wash.id} - {wash.clientName} (${wash.total})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        <div className="form-group">
+          <label>Fecha de Pago</label>
+          <input
+            type="date"
+            name="paymentDate"
+            value={formData.paymentDate}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Método de Pago</label>
+          <select
+            name="paymentMethod"
+            value={formData.paymentMethod}
+            onChange={handleChange}
+            required
+          >
+            <option value="cash">Efectivo</option>
+            <option value="credit_card">Tarjeta de Crédito</option>
+            <option value="debit_card">Tarjeta de Débito</option>
+            <option value="transfer">Transferencia Bancaria</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Monto</label>
+          <input
+            type="number"
+            name="amount"
+            value={formData.amount}
+            onChange={handleNumberChange}
+            required
+            step="0.01"
+          />
+        </div>
+        {formData.paymentMethod !== 'cash' && (
+          <div className="form-group">
+            <label>Referencia/Número</label>
+            <input
+              type="text"
+              name="reference"
+              value={formData.reference}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        )}
+        <div className="form-group">
+          <label>Notas</label>
+          <textarea
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+            rows={2}
+            placeholder="Notas (opcional)"
+          />
+        </div>
+        <button type="submit" className="form-button">
+          Registrar Pago
+        </button>
+      </form>
     </div>
   );
 };
