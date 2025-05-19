@@ -1,7 +1,26 @@
+:root {
+  --primary-blue: #1a237e;
+  --secondary-blue: #3949ab;
+  --accent-blue: #2fa1ff;
+  --light-bg: #f4f7fb;
+  --white: #fff;
+  --gray: #545b67;
+  --border-radius: 14px;
+  --shadow: 0 8px 32px rgba(30, 41, 59, 0.14);
+  --error: #d64045;
+  --success: #2ecc71;
+}
+
 .page-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  max-width: 800px;
+  margin-top: 32px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .page-header {
@@ -17,15 +36,21 @@
   flex-wrap: wrap;
   background-color: #ddd;
   padding: 10 20 0;
+  border-radius: 10px;
+}
+.date-range-info p{
+  color: var(--accent-blue)
 }
 
-.form-group {
+.form-dates {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   min-width: 200px;
+  gap: 8px;
 } 
-.form-button {
-  padding-top: 1.3rem;
+
+.calc-button {
+  padding-top: 0.2rem;
 }
 
 .form-group label {

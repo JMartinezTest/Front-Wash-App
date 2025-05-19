@@ -34,7 +34,9 @@ body {
 }
 
 /* Encabezados */
-h2, h3, h4 {
+h2,
+h3,
+h4 {
   color: var(--primary-blue);
   margin-bottom: 20px;
   font-family: "Roboto", "Segoe UI", Arial, sans-serif;
@@ -48,7 +50,8 @@ form {
   flex-direction: column;
 }
 
-input, textarea {
+input,
+textarea {
   padding: 12px;
   margin-bottom: 16px;
   border: 1.5px solid #cfd8dc;
@@ -59,7 +62,8 @@ input, textarea {
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   border-color: var(--secondary-blue);
   box-shadow: 0 0 5px rgba(57, 73, 171, 0.15);
   outline: none;
@@ -83,14 +87,18 @@ button:hover {
 }
 
 /* Tablas */
-table, .clients-table, .cars-table, .employees-table {
+table,
+.clients-table,
+.cars-table,
+.employees-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
   box-shadow: 0 4px 8px rgba(30, 41, 59, 0.08);
 }
 
-th, td {
+th,
+td {
   padding: 10px;
   border: 1px solid #e0e0e0;
   text-align: center;
@@ -111,7 +119,8 @@ tr:hover {
 }
 
 /* Botones de acción en tablas */
-.delete-button, .client-item button {
+.delete-button,
+.client-item button {
   background: #ff6b6b;
   color: var(--white);
   border: none;
@@ -121,7 +130,8 @@ tr:hover {
   transition: background 0.2s;
 }
 
-.delete-button:hover, .client-item button:hover {
+.delete-button:hover,
+.client-item button:hover {
   background: #ff4d4d;
 }
 
@@ -183,4 +193,9 @@ tr:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
 }

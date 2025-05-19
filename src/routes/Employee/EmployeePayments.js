@@ -129,34 +129,35 @@ const EmployeePayments = () => {
             </select>
           </div>
 
-          <div className="form-group">
-            <label>Fecha Inicio:</label>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => handleDateRangeChange([date, endDate])}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              maxDate={new Date()}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Fecha Fin:</label>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => handleDateRangeChange([startDate, date])}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              maxDate={new Date()}
-            />
-          </div>
-          <div className="form-button">
-            <button onClick={calculatePayments} disabled={!selectedEmployee}>
-              Calcular Pago
-            </button>
+          <div className="form-dates">
+            <div>
+              <label>Fecha Inicio:</label>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => handleDateRangeChange([date, endDate])}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                maxDate={new Date()}
+              />
+            </div>
+            <div>
+              <label>Fecha Fin:</label>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => handleDateRangeChange([startDate, date])}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                maxDate={new Date()}
+              />
+            </div>
+            <div className="calc-button">
+              <button onClick={calculatePayments} disabled={!selectedEmployee}>
+                Calcular Pago
+              </button>
+            </div>
           </div>
         </div>
       </div>

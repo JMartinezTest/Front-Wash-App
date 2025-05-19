@@ -53,7 +53,6 @@
 /* Celda de acciones */
 .actions-cell {
     display: flex;
-    gap: 8px;
 }
 
 /* Botones */
@@ -67,16 +66,16 @@
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
 }
 
 .edit-button {
     background-color: #4caf50;
     color: white;
+    margin-right: 1rem;
 }
 
 .edit-button:hover {
-    background-color: #3d8b40;
+    background-color: #fa1b1b;
     transform: translateY(-1px);
 }
 
