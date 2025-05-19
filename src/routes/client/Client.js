@@ -38,15 +38,15 @@ const Clients = () => {
     { key: 'name', title: 'Nombre' },
     { key: 'lastName', title: 'Apellido' },
     { key: 'nit', title: 'NIT' },
-    { key: 'phone', title: 'Teléfono' },
+    { key: 'phoneNumber', title: 'Teléfono' },
     { 
       key: 'actions',
       title: 'Acciones',
       render: (client) => (
         <div className="actions">
-          <button onClick={() => navigate(`/clients/edit/${client.id}`)}>
+          {/* <button onClick={() => navigate(`/clients/edit/${client.id}`)}>
             Editar
-          </button>
+          </button> */}
           <button onClick={() => handleDelete(client.id)}>
             Eliminar
           </button>

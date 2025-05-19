@@ -11,7 +11,7 @@ const ClientForm = () => {
     name: '',
     lastName: '',
     nit: '',
-    phone: '',
+    phoneNumber: '',
     email: '',
     address: ''
   });
@@ -53,7 +53,7 @@ const ClientForm = () => {
           name: '',
           lastName: '',
           nit: '',
-          phone: '',
+          phoneNumber: '',
           email: '',
           address: ''
         });
@@ -99,7 +99,7 @@ const ClientForm = () => {
       required: true
     },
     {
-      name: 'phone',
+      name: 'phoneNumber',
       label: 'Teléfono',
       type: 'tel',
       value: formData.phone,

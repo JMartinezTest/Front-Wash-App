@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { apiService } from '../../api/apiService';
-import Form from '../../components/Forms';  
-import './CarForm.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { apiService } from "../../api/apiService";
+import Form from "../../components/Forms";
+import "./CarForm.css";
 
 const CarForm = () => {
   const { licencePlate } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    licencePlate: '',
-    make: '',
-    model: '',
-    year: '',
-    color: '',
-    clientId: ''
+    licencePlate: "",
+    make: "",
+    year: "",
+    color: "",
+    clientId: "",
   });
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(!!licencePlate);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Cargar datos iniciales si es edición
   useEffect(() => {
@@ -45,28 +44,27 @@ const CarForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccessMessage('');
+    setError("");
+    setSuccessMessage("");
 
     try {
       if (licencePlate) {
         await apiService.updateCar(licencePlate, formData);
-        setSuccessMessage('Vehículo actualizado correctamente');
+        setSuccessMessage("Vehículo actualizado correctamente");
       } else {
         await apiService.registerCar(formData);
-        setSuccessMessage('Vehículo registrado correctamente');
+        setSuccessMessage("Vehículo registrado correctamente");
         setFormData({
-          licencePlate: '',
-          make: '',
-          model: '',
-          year: '',
-          color: '',
-          clientId: ''
+          licencePlate: "",
+          make: "",
+          year: "",
+          color: "",
+          clientId: "",
         });
       }
-      
+
       // Redirigir después de 2 segundos
-      setTimeout(() => navigate('/cars'), 2000);
+      setTimeout(() => navigate("/cars"), 2000);
     } catch (err) {
       setError(err.message);
     }
@@ -74,71 +72,63 @@ const CarForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const fields = [
     {
-      name: 'licencePlate',
-      label: 'Placa',
-      type: 'text',
+      name: "licencePlate",
+      label: "Placa",
+      type: "text",
       value: formData.licencePlate,
       onChange: handleChange,
       required: true,
-      disabled: !!licencePlate // Bloquear edición de placa si es edición
+      disabled: !!licencePlate, // Bloquear edición de placa si es edición
     },
     {
-      name: 'make',
-      label: 'Marca',
-      type: 'text',
+      name: "make",
+      label: "Marca",
+      type: "text",
       value: formData.make,
       onChange: handleChange,
-      required: true
+      required: true,
     },
     {
-      name: 'model',
-      label: 'Modelo',
-      type: 'text',
-      value: formData.model,
-      onChange: handleChange,
-      required: true
-    },
-    {
-      name: 'year',
-      label: 'Año',
-      type: 'number',
+      name: "year",
+      label: "Año",
+      type: "number",
       value: formData.year,
       onChange: handleChange,
       required: true,
       min: 1990,
-      max: new Date().getFullYear() + 1
+      max: new Date().getFullYear() + 1,
     },
     {
-      name: 'color',
-      label: 'Color',
-      type: 'text',
+      name: "color",
+      label: "Color",
+      type: "text",
       value: formData.color,
       onChange: handleChange,
-      required: true
+      required: true,
     },
     {
-      name: 'clientId',
-      label: 'Cliente',
-      type: 'select',
+      name: "clientId",
+      label: "Cliente",
+      type: "select",
       value: formData.clientId,
       onChange: handleChange,
       required: true,
       options: [
-        { value: '', label: 'Seleccione un cliente' },
-        ...clients.map(client => ({
+        { value: "", label: "Seleccione un cliente" },
+        ...clients.map((client) => ({
           value: client.id,
-          label: `${client.name} ${client.lastName} (${client.nit})`
-        }))
-      ]
-    }
+          label: `${client.name} ${client.lastName} (${client.nit})`,
+        })),
+      ],
+    },
   ];
 
   if (loading) {
@@ -152,14 +142,14 @@ const CarForm = () => {
 
   return (
     <div className="car-form-container">
-      <h2>{licencePlate ? 'Editar Vehículo' : 'Registrar Nuevo Vehículo'}</h2>
-      
+      <h2>{licencePlate ? "Editar Vehículo" : "Registrar Nuevo Vehículo"}</h2>
+
       <Form
         fields={fields}
         onSubmit={handleSubmit}
         error={error}
         successMessage={successMessage}
-        submitText={licencePlate ? 'Actualizar Vehículo' : 'Registrar Vehículo'}
+        submitText={licencePlate ? "Actualizar Vehículo" : "Registrar Vehículo"}
       />
     </div>
   );

@@ -46,9 +46,9 @@ const Services = () => {
       title: 'Acciones',
       render: (service) => (
         <div className="actions">
-          <button onClick={() => navigate(`/services/edit/${service.id}`)}>
+          {/* <button onClick={() => navigate(`/services/edit/${service.id}`)}>
             Editar
-          </button>
+          </button> */}
           <button onClick={() => handleDelete(service.id)}>
             Eliminar
           </button>

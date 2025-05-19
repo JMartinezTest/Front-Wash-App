@@ -26,16 +26,15 @@ const Cars = () => {
   const columns = [
     { key: 'licencePlate', title: 'Placa' },
     { key: 'make', title: 'Marca' },
-    { key: 'model', title: 'Modelo' },
     { key: 'color', title: 'Color' },
     { 
       key: 'actions',
       title: 'Acciones',
       render: (car) => (
         <div className="actions">
-          <button onClick={() => navigate(`/cars/edit/${car.licencePlate}`)}>
+          {/* <button onClick={() => navigate(`/cars/edit/${car.licencePlate}`)}>
             Editar
-          </button>
+          </button> */}
           <button onClick={() => handleDelete(car.licencePlate)}>
             Eliminar
           </button>

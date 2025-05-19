@@ -49,13 +49,6 @@ const RegisterCar = () => {
         />
         <input
           type="text"
-          placeholder="Modelo"
-          value={newCar.make}
-          onChange={(e) => setNewCar({ ...newCar, make: e.target.value })}
-          required
-        />
-        <input
-          type="text"
           placeholder="Color"
           value={newCar.color}
           onChange={(e) => setNewCar({ ...newCar, color: e.target.value })}
