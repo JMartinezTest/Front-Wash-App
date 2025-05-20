@@ -105,6 +105,18 @@ export const apiService = {
   // En apiService.js, agregar estos métodos al objeto exportado
   calculateEmployeePayment: (employeeId, startDate, endDate) =>
     fetchWithAuth(
-      `/washed/employee/${employeeId}/payment?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
-    ,{ method: "GET" }),
+      `/washed/employee/${employeeId}/payment?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+      { method: "GET" }
+    ),
+
+  // Predicciones
+  predictDemand: (data) =>
+    fetchWithAuth("/api/predecir", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  getPredictionHistory: () =>
+    fetchWithAuth("/api/historial", {
+      method: "GET",
+    }),
 };
