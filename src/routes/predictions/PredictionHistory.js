@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { apiService } from '../api/apiService';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import './PredictionHistory.css';
