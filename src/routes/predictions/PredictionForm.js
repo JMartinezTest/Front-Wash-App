@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { apiService } from '../api/apiService';
 import './PredictionForm.css';
+import { apiService } from '../../api/apiService';
 
 const PredictionForm = () => {
   const [formData, setFormData] = useState({

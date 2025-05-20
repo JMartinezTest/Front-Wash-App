@@ -11,10 +11,12 @@
     "@rsbuild/plugin-node-polyfill": "^1.2.0",
     "@types/react-datepicker": "^7.0.0",
     "axios": "^1.7.7",
+    "file-saver": "^2.0.5",
     "react": "^18.3.1",
     "react-datepicker": "^8.3.0",
     "react-dom": "^18.3.1",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@rsbuild/core": "^1.0.13",
