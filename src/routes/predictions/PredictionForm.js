@@ -4,9 +4,8 @@ import { apiService } from '../../api/apiService';
 
 const PredictionForm = () => {
   const [formData, setFormData] = useState({
-    idCliente: '',
     diaSemana: '',
-    hora: '',
+    jornada: '',
     clima: '',
     temperatura: '',
     tipoServicio: '',
@@ -31,9 +30,8 @@ const PredictionForm = () => {
     try {
       // Prepare and validate data
       const data = {
-        idCliente: parseInt(formData.idCliente) || 0, // Numeric
         diaSemana: formData.diaSemana || '', // Nominal
-        hora: Number(formData.hora) || 0, // Numeric
+        jornada: formData.jornada || '', // Nominal
         clima: formData.clima || '', // Nominal
         temperatura: Number(formData.temperatura) || 0.0, // Numeric
         tipoServicio: formData.tipoServicio || '', // Nominal
@@ -41,8 +39,9 @@ const PredictionForm = () => {
         promocionesActivas: formData.promocionesActivas || '', // Nominal
       };
 
-      // Define valid nominal values from lavadero_autos.arff
+      // Define valid nominal values
       const validDiaSemana = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+      const validJornada = ['Mañana', 'Tarde', 'Noche'];
       const validClima = ['Soleado', 'Lluvioso', 'Nublado'];
       const validTipoServicio = ['Basico', 'Completo', 'Premium'];
       const validPromocionesActivas = ['Si', 'No'];
@@ -50,6 +49,9 @@ const PredictionForm = () => {
       // Validate nominal attributes
       if (!validDiaSemana.includes(data.diaSemana)) {
         throw new Error('Día de la semana inválido. Seleccione un valor válido.');
+      }
+      if (!validJornada.includes(data.jornada)) {
+        throw new Error('Jornada inválida. Seleccione un valor válido.');
       }
       if (!validClima.includes(data.clima)) {
         throw new Error('Clima inválido. Seleccione un valor válido.');
@@ -62,12 +64,6 @@ const PredictionForm = () => {
       }
 
       // Validate numeric attributes
-      if (data.idCliente < 0) {
-        throw new Error('ID Cliente no puede ser negativo.');
-      }
-      if (data.hora < 0 || data.hora > 23) {
-        throw new Error('Hora debe estar entre 0 y 23.');
-      }
       if (data.temperatura < -50 || data.temperatura > 50) {
         throw new Error('Temperatura debe estar entre -50 y 50 °C.');
       }
@@ -95,79 +91,6 @@ const PredictionForm = () => {
         <div className="form-grid">
           <div className="form-column">
             <div className="form-field">
-              <label htmlFor="idCliente">
-                <span className="field-icon">👤</span>
-                ID Cliente
-              </label>
-              <input 
-                type="number" 
-                id="idCliente"
-                name="idCliente" 
-                value={formData.idCliente} 
-                onChange={handleChange} 
-                min="0" 
-                placeholder="Ingrese ID del cliente"
-                required 
-              />
-            </div>
-            
-            <div className="form-field">
-              <label htmlFor="hora">
-                <span className="field-icon">🕒</span>
-                Hora (0-23)
-              </label>
-              <input 
-                type="number" 
-                id="hora"
-                name="hora" 
-                value={formData.hora} 
-                onChange={handleChange} 
-                min="0" 
-                max="23" 
-                step="1" 
-                placeholder="Hora del día (0-23)"
-                required 
-              />
-            </div>
-            
-            <div className="form-field">
-              <label htmlFor="temperatura">
-                <span className="field-icon">🌡️</span>
-                Temperatura (°C)
-              </label>
-              <input 
-                type="number" 
-                id="temperatura"
-                name="temperatura" 
-                value={formData.temperatura} 
-                onChange={handleChange} 
-                step="0.1" 
-                placeholder="Temperatura en grados Celsius"
-                required 
-              />
-            </div>
-            
-            <div className="form-field">
-              <label htmlFor="historialVisitas">
-                <span className="field-icon">📊</span>
-                Historial de Visitas
-              </label>
-              <input 
-                type="number" 
-                id="historialVisitas"
-                name="historialVisitas" 
-                value={formData.historialVisitas} 
-                onChange={handleChange} 
-                min="0" 
-                step="1" 
-                placeholder="Número de visitas previas"
-                required 
-              />
-            </div>
-          </div>
-
-          <div className="form-column">
-            <div className="form-field">
               <label htmlFor="diaSemana">
                 <span className="field-icon">📅</span>
                 Día de la Semana
@@ -190,6 +113,44 @@ const PredictionForm = () => {
               </select>
             </div>
             
+            <div className="form-field">
+              <label htmlFor="jornada">
+                <span className="field-icon">🕒</span>
+                Jornada
+              </label>
+              <select 
+                id="jornada"
+                name="jornada" 
+                value={formData.jornada} 
+                onChange={handleChange} 
+                required
+              >
+                <option value="">Seleccione la jornada</option>
+                <option value="Mañana">Mañana</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noche">Noche</option>
+              </select>
+            </div>
+            
+            <div className="form-field">
+              <label htmlFor="temperatura">
+                <span className="field-icon">🌡️</span>
+                Temperatura (°C)
+              </label>
+              <input 
+                type="number" 
+                id="temperatura"
+                name="temperatura" 
+                value={formData.temperatura} 
+                onChange={handleChange} 
+                step="0.1" 
+                placeholder="Temperatura en grados Celsius"
+                required 
+              />
+            </div>
+          </div>
+
+          <div className="form-column">
             <div className="form-field">
               <label htmlFor="clima">
                 <span className="field-icon">🌤️</span>
@@ -226,6 +187,24 @@ const PredictionForm = () => {
                 <option value="Completo">Completo</option>
                 <option value="Premium">Premium</option>
               </select>
+            </div>
+            
+            <div className="form-field">
+              <label htmlFor="historialVisitas">
+                <span className="field-icon">📊</span>
+                Historial de Visitas
+              </label>
+              <input 
+                type="number" 
+                id="historialVisitas"
+                name="historialVisitas" 
+                value={formData.historialVisitas} 
+                onChange={handleChange} 
+                min="0" 
+                step="1" 
+                placeholder="Número de visitas previas"
+                required 
+              />
             </div>
             
             <div className="form-field">
@@ -270,8 +249,8 @@ const PredictionForm = () => {
           </div>
           <div className="result-content">
             <div className="result-item">
-              <span className="result-label">Predicción:</span>
-              <span className="result-value">{predictionResult.prediccion}</span>
+              <span className="result-label">Clientes Estimados:</span>
+              <span className="result-value">{predictionResult.clientesEstimados}</span>
             </div>
             <div className="result-item">
               <span className="result-label">Confianza:</span>

@@ -14,14 +14,20 @@ const WashHistory = () => {
 
   const fetchAllData = async () => {
     try {
-      const [washesData, servicesData, employeesData, carsData, clientsData] = await Promise.all([
+      const [
+        washesData,
+        servicesData,
+        employeesData,
+        carsData,
+        clientsData
+      ] = await Promise.all([
         apiService.getWashedRecords(),
         apiService.getServices(),
         apiService.getEmployees(),
         apiService.getCars(),
         apiService.getClients()
       ]);
-      
+
       setWashes(washesData);
       setServices(servicesData);
       setEmployees(employeesData);
@@ -38,25 +44,21 @@ const WashHistory = () => {
     fetchAllData();
   }, []);
 
-  // Función para obtener el nombre de un servicio por su ID
   const getServiceName = (serviceId) => {
     const service = services.find(s => s.id === serviceId);
     return service ? `${service.name} ($${service.price})` : 'Servicio no encontrado';
   };
 
-  // Función para obtener el nombre del empleado
   const getEmployeeName = (employeeId) => {
     const employee = employees.find(e => e.id === employeeId);
     return employee ? `${employee.name} ${employee.lastName}` : 'Empleado no encontrado';
   };
 
-  // Función para obtener los detalles del vehículo
   const getCarDetails = (carId) => {
     const car = cars.find(c => c.id === carId);
     return car ? `${car.make} ${car.color} (${car.licencePlate})` : 'Vehículo no encontrado';
   };
 
-  // Función para obtener el nombre del cliente
   const getClientName = (clientId) => {
     const client = clients.find(c => c.id === clientId);
     return client ? `${client.name} ${client.lastName}` : 'Cliente no encontrado';
@@ -83,7 +85,7 @@ const WashHistory = () => {
       title: 'Servicios',
       render: (wash) => (
         <ul style={{ margin: 0, paddingLeft: '20px' }}>
-          {wash.servicesOffered.map(serviceId => (
+          {(wash.servicesOffered || []).map(serviceId => (
             <li key={serviceId}>{getServiceName(serviceId)}</li>
           ))}
         </ul>
@@ -97,9 +99,8 @@ const WashHistory = () => {
     { 
       key: 'total', 
       title: 'Total', 
-      render: (wash) => `$${wash.totalPrice.toLocaleString()}` 
+      render: (wash) => `$${wash.totalPrice?.toLocaleString() || 'N/A'}` 
     },
-   
   ];
 
   const handleDelete = async (id) => {
@@ -127,6 +128,7 @@ const WashHistory = () => {
         columns={columns} 
         data={washes} 
         emptyMessage="No hay registros de lavados"
+        onDelete={handleDelete}
       />
     </div>
   );

@@ -2,8 +2,8 @@ import React from 'react';
 import './DataTable.css';
 
 const DataTable = ({ 
-  columns, 
-  data, 
+  columns = [], 
+  data = [], 
   emptyMessage = 'No hay datos disponibles',
   onDelete,
   onEdit
@@ -13,18 +13,18 @@ const DataTable = ({
       <table className="data-table">
         <thead>
           <tr>
-            {columns.map((column) => (
+            {Array.isArray(columns) && columns.map((column) => (
               <th key={column.key}>{column.title}</th>
             ))}
             {(onDelete || onEdit) && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
-          {data.length > 0 ? (
+          {Array.isArray(data) && data.length > 0 ? (
             data.map((item) => (
               <tr key={item.id || item.licencePlate}>
                 {columns.map((column) => (
-                  <td key={`${item.id}-${column.key}`}>
+                  <td key={`${item.id || item.licencePlate}-${column.key}`}>
                     {column.render ? column.render(item) : item[column.key]}
                   </td>
                 ))}
