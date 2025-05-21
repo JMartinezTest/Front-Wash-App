@@ -5,6 +5,7 @@ import DataTable from '../../components/DataTable';
 
 const WashHistory = () => {
   const [washes, setWashes] = useState([]);
+  console.log('washes::: ', JSON.parse(JSON.stringify(washes)));
   const [services, setServices] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [cars, setCars] = useState([]);
@@ -85,7 +86,7 @@ const WashHistory = () => {
       title: 'Servicios',
       render: (wash) => (
         <ul style={{ margin: 0, paddingLeft: '20px' }}>
-          {(wash.servicesOffered || []).map(serviceId => (
+          {(wash.serviceOffered || []).map(serviceId => (
             <li key={serviceId}>{getServiceName(serviceId)}</li>
           ))}
         </ul>
@@ -99,7 +100,7 @@ const WashHistory = () => {
     { 
       key: 'total', 
       title: 'Total', 
-      render: (wash) => `$${wash.totalPrice?.toLocaleString() || 'N/A'}` 
+      render: (wash) => `$${wash.total?.toLocaleString() || 'N/A'}` 
     },
   ];
 

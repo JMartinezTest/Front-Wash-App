@@ -16,6 +16,7 @@ const WashForm = () => {
     observations: "",
     total: 0,
   });
+  console.log('formData::: ', formData);
 
   const [availableServices, setAvailableServices] = useState([]);
   const [selectedServices, setSelectedServices] = useState([]);
@@ -87,6 +88,7 @@ const WashForm = () => {
         await apiService.updateWashedRecord(id, formData);
         setSuccessMessage("Registro de lavado actualizado correctamente");
       } else {
+        console.log('formData send::: ', JSON.parse(JSON.stringify(formData)));
         await apiService.registerWashed(formData);
         setSuccessMessage("Lavado registrado correctamente");
         setFormData({

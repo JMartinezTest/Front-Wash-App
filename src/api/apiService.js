@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8084";
+const API_BASE_URL = "http://localhost:8080";
 
 const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
@@ -77,17 +77,19 @@ export const apiService = {
   // Lavados
   getWashedRecords: () => fetchWithAuth("/washed"),
   getWashedRecord: (id) => fetchWithAuth(`/washed/${id}`),
-  registerWashed: (record) =>
+  registerWashed: (record) => {
+    console.log("record::: ", JSON.parse(JSON.stringify(record)));
     fetchWithAuth("/washed/register", {
       method: "POST",
       body: JSON.stringify({
         client: record.clientId,
         employee: record.employeeId,
         car: record.carId,
-        servicesOffered: record.serviceIds,
+        serviceOffered: record.serviceIds,
         total: record.total,
       }),
-    }),
+    });
+  },
   updateWashedRecord: (id, record) =>
     fetchWithAuth(`/washed/${id}`, {
       method: "PUT",
@@ -95,7 +97,7 @@ export const apiService = {
         client: record.clientId,
         employee: record.employeeId,
         car: record.carId,
-        servicesOffered: record.serviceIds,
+        serviceOffered: record.serviceIds,
         total: record.total,
       }),
     }),
