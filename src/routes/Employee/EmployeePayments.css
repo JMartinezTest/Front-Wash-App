@@ -16,23 +16,19 @@ background: var(--white);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   max-width: 800px;
-  margin-top: 32px;
-  padding: 32px 28px;
+  padding: 8px 28px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .payment-controls {
   display: flex;
-  gap: 15px;
   flex-wrap: wrap;
   background-color: #ddd;
   padding: 10 20 0;

@@ -23,13 +23,14 @@ const Clients = () => {
     fetchClients();
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async ({id}) => {
     if (window.confirm('¿Está seguro de eliminar este cliente?')) {
       try {
         await apiService.deleteClient(id);
-        fetchClients(); // Recargar la lista
       } catch (err) {
         console.error(err);
+      }finally{
+        fetchClients(); // Recargar la lista
       }
     }
   };
@@ -47,7 +48,7 @@ const Clients = () => {
           {/* <button onClick={() => navigate(`/clients/edit/${client.id}`)}>
             Editar
           </button> */}
-          <button onClick={() => handleDelete(client.id)}>
+          <button onClick={() => handleDelete(client)}>
             Eliminar
           </button>
         </div>

@@ -23,12 +23,13 @@ const Services = () => {
     fetchServices();
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async ({id}) => {
     try {
       await apiService.deleteService(id);
-      fetchServices(); // Refrescar la lista después de eliminar
     } catch (err) {
       console.error(err);
+    }finally{
+      fetchServices(); // Refrescar la lista después de eliminar
     }
   };
 
@@ -49,7 +50,7 @@ const Services = () => {
           {/* <button onClick={() => navigate(`/services/edit/${service.id}`)}>
             Editar
           </button> */}
-          <button onClick={() => handleDelete(service.id)}>
+          <button onClick={() => handleDelete(service)}>
             Eliminar
           </button>
         </div>

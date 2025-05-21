@@ -35,13 +35,24 @@ const Cars = () => {
           {/* <button onClick={() => navigate(`/cars/edit/${car.licencePlate}`)}>
             Editar
           </button> */}
-          <button onClick={() => handleDelete(car.licencePlate)}>
+          <button onClick={() => handleDelete(car)}>
             Eliminar
           </button>
         </div>
       )
     }
   ];
+   const handleDelete = async ({id}) => {
+      if (window.confirm('¿Está seguro de eliminar este registro vehiculo? ')) {
+        try {
+          await apiService.deleteCar(id);
+        } catch (err) {
+          console.error(err);
+        }finally{
+          fetchCars()
+        }
+      }
+    };
 
   if (loading) return <div>Cargando vehículos...</div>;
 

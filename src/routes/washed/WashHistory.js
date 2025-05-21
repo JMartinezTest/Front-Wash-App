@@ -104,13 +104,14 @@ const WashHistory = () => {
     },
   ];
 
-  const handleDelete = async (id) => {
-    if (window.confirm('¿Está seguro de eliminar este registro de lavado?')) {
+  const handleDelete = async ({id}) => {
+    if (window.confirm('¿Está seguro de eliminar este registro de lavado? '+id)) {
       try {
         await apiService.deleteWashedRecord(id);
-        fetchAllData();
       } catch (err) {
         console.error(err);
+      }finally{
+        fetchAllData()
       }
     }
   };

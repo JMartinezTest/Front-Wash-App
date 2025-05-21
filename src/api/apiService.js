@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "http://localhost:8081";
 
 const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
@@ -23,7 +23,6 @@ const fetchWithAuth = async (endpoint, options = {}) => {
     return response.json();
   } catch (error) {
     console.error("API Error:", error);
-    throw error;
   }
 };
 
@@ -55,8 +54,8 @@ export const apiService = {
       method: "POST",
       body: JSON.stringify(car),
     }),
-  deleteCar: (licencePlate) =>
-    fetchWithAuth(`/cars/${licencePlate}`, { method: "DELETE" }),
+  deleteCar: (id) =>
+    fetchWithAuth(`/cars/${id}`, { method: "DELETE" }),
 
   // Clientes
   getClients: () => fetchWithAuth("/clients"),
@@ -65,6 +64,8 @@ export const apiService = {
       method: "POST",
       body: JSON.stringify(client),
     }),
+  deleteClient: (id) =>
+    fetchWithAuth(`/clients/${id}`, { method: "DELETE" }),
 
   // Servicios
   getServices: () => fetchWithAuth("/services"),
@@ -73,6 +74,9 @@ export const apiService = {
       method: "POST",
       body: JSON.stringify(service),
     }),
+    deleteService: (id) =>
+    fetchWithAuth(`/services/${id}`, { method: "DELETE" }),
+
 
   // Lavados
   getWashedRecords: () => fetchWithAuth("/washed"),
