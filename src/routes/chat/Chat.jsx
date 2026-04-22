@@ -3,19 +3,21 @@ import { apiService } from '../../api/apiService';
 import './Chat.css';
 
 const Chat = () => {
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      text: '¡Hola! Soy el asistente virtual de San Felipe. ¿En qué puedo ayudarte hoy?',
-    },
+    { role: 'assistant', text: '¡Hola! Soy el asistente de San Felipe. ¿En qué te ayudo?' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (open) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+      inputRef.current?.focus();
+    }
+  }, [open, messages]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -28,11 +30,8 @@ const Chat = () => {
 
     try {
       const data = await apiService.sendChatMessage(text);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', text: data.response },
-      ]);
-    } catch (err) {
+      setMessages((prev) => [...prev, { role: 'assistant', text: data.response }]);
+    } catch {
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', text: 'Lo siento, ocurrió un error. Inténtalo de nuevo.' },
@@ -43,48 +42,57 @@ const Chat = () => {
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <div className="chat-header-icon">💬</div>
-        <div>
-          <h2>Asistente San Felipe</h2>
-          <span className="chat-status">Powered by Gemini</span>
-        </div>
-      </div>
-
-      <div className="chat-messages">
-        {messages.map((msg, i) => (
-          <div key={i} className={`chat-bubble ${msg.role}`}>
-            {msg.role === 'assistant' && (
-              <div className="bubble-avatar">SF</div>
-            )}
-            <div className="bubble-text">{msg.text}</div>
-          </div>
-        ))}
-        {loading && (
-          <div className="chat-bubble assistant">
-            <div className="bubble-avatar">SF</div>
-            <div className="bubble-text typing">
-              <span></span><span></span><span></span>
+    <div className="chat-widget">
+      {open && (
+        <div className="chat-popup">
+          <div className="chat-popup-header">
+            <div className="chat-popup-title">
+              <div className="chat-avatar-sm">SF</div>
+              <div>
+                <p className="chat-popup-name">Asistente San Felipe</p>
+                <span className="chat-popup-status">● En línea · Gemini AI</span>
+              </div>
             </div>
+            <button className="chat-close-btn" onClick={() => setOpen(false)}>✕</button>
           </div>
-        )}
-        <div ref={bottomRef} />
-      </div>
 
-      <form className="chat-input-area" onSubmit={handleSend}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Escribe tu mensaje..."
-          disabled={loading}
-          autoFocus
-        />
-        <button type="submit" disabled={loading || !input.trim()}>
-          Enviar
-        </button>
-      </form>
+          <div className="chat-popup-messages">
+            {messages.map((msg, i) => (
+              <div key={i} className={`chat-msg ${msg.role}`}>
+                {msg.role === 'assistant' && <div className="chat-avatar-xs">SF</div>}
+                <div className="chat-msg-bubble">{msg.text}</div>
+              </div>
+            ))}
+            {loading && (
+              <div className="chat-msg assistant">
+                <div className="chat-avatar-xs">SF</div>
+                <div className="chat-msg-bubble typing">
+                  <span /><span /><span />
+                </div>
+              </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
+
+          <form className="chat-popup-input" onSubmit={handleSend}>
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Escribe un mensaje..."
+              disabled={loading}
+            />
+            <button type="submit" disabled={loading || !input.trim()}>
+              ➤
+            </button>
+          </form>
+        </div>
+      )}
+
+      <button className="chat-fab" onClick={() => setOpen((prev) => !prev)} title="Asistente IA">
+        {open ? '✕' : '💬'}
+      </button>
     </div>
   );
 };

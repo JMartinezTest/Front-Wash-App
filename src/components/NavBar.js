@@ -41,9 +41,6 @@ const NavBar = () => {
           <Link to="/predictions" className="nav-link">
             <i className="fas fa-chart-line"></i> Predicción del Día
           </Link>
-          <Link to="/chat" className="nav-link">
-            <i className="fas fa-comments"></i> Asistente
-          </Link>
         </div>
 
         {/* Menú de registros */}
