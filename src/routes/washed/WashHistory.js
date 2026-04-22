@@ -11,6 +11,7 @@ const WashHistory = () => {
   const [cars, setCars] = useState([]);
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const fetchAllData = async () => {
@@ -29,14 +30,16 @@ const WashHistory = () => {
         apiService.getClients()
       ]);
 
-      setWashes(washesData);
-      setServices(servicesData);
-      setEmployees(employeesData);
-      setCars(carsData);
-      setClients(clientsData);
+      setWashes(washesData || []);
+      setServices(servicesData || []);
+      setEmployees(employeesData || []);
+      setCars(carsData || []);
+      setClients(clientsData || []);
+      setError(null);
       setLoading(false);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching data:', err);
+      setError(err.message || 'Error cargando datos. Verifica que el backend esté disponible.');
       setLoading(false);
     }
   };
