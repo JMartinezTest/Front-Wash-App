@@ -75,15 +75,13 @@ export const apiService = {
       method: "POST",
       body: JSON.stringify(service),
     }),
-    deleteService: (id) =>
+  deleteService: (id) =>
     fetchWithAuth(`/services/${id}`, { method: "DELETE" }),
-
 
   // Lavados
   getWashedRecords: () => fetchWithAuth("/washed"),
   getWashedRecord: (id) => fetchWithAuth(`/washed/${id}`),
-  registerWashed: (record) => {
-    console.log("record::: ", JSON.parse(JSON.stringify(record)));
+  registerWashed: (record) =>
     fetchWithAuth("/washed/register", {
       method: "POST",
       body: JSON.stringify({
@@ -93,8 +91,7 @@ export const apiService = {
         serviceOffered: record.serviceIds,
         total: record.total,
       }),
-    });
-  },
+    }),
   updateWashedRecord: (id, record) =>
     fetchWithAuth(`/washed/${id}`, {
       method: "PUT",
@@ -109,7 +106,6 @@ export const apiService = {
   deleteWashedRecord: (id) =>
     fetchWithAuth(`/washed/${id}`, { method: "DELETE" }),
 
-  // En apiService.js, agregar estos métodos al objeto exportado
   calculateEmployeePayment: (employeeId, startDate, endDate) =>
     fetchWithAuth(
       `/washed/employee/${employeeId}/payment?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
@@ -123,7 +119,12 @@ export const apiService = {
       body: JSON.stringify(data),
     }),
   getPredictionHistory: () =>
-    fetchWithAuth("/api/historial", {
-      method: "GET",
+    fetchWithAuth("/api/historial", { method: "GET" }),
+
+  // Chat
+  sendChatMessage: (message) =>
+    fetchWithAuth("/chat/message", {
+      method: "POST",
+      body: JSON.stringify({ message }),
     }),
 };

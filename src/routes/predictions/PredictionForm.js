@@ -4,8 +4,9 @@ import { apiService } from '../../api/apiService';
 
 const PredictionForm = () => {
   const [formData, setFormData] = useState({
+    idCliente: '',
     diaSemana: '',
-    jornada: '',
+    hora: '',
     clima: '',
     temperatura: '',
     tipoServicio: '',
@@ -28,42 +29,20 @@ const PredictionForm = () => {
     setLoading(true);
 
     try {
-      // Prepare and validate data
       const data = {
-        diaSemana: formData.diaSemana || '', // Nominal
-        jornada: formData.jornada || '', // Nominal
-        clima: formData.clima || '', // Nominal
-        temperatura: Number(formData.temperatura) || 0.0, // Numeric
-        tipoServicio: formData.tipoServicio || '', // Nominal
-        historialVisitas: parseInt(formData.historialVisitas) || 0, // Numeric
-        promocionesActivas: formData.promocionesActivas || '', // Nominal
+        idCliente: parseInt(formData.idCliente) || 0,
+        diaSemana: formData.diaSemana,
+        hora: parseInt(formData.hora),
+        clima: formData.clima,
+        temperatura: Number(formData.temperatura),
+        tipoServicio: formData.tipoServicio,
+        historialVisitas: parseInt(formData.historialVisitas) || 0,
+        promocionesActivas: formData.promocionesActivas,
       };
 
-      // Define valid nominal values
-      const validDiaSemana = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
-      const validJornada = ['Mañana', 'Tarde', 'Noche'];
-      const validClima = ['Soleado', 'Lluvioso', 'Nublado'];
-      const validTipoServicio = ['Basico', 'Completo', 'Premium'];
-      const validPromocionesActivas = ['Si', 'No'];
-
-      // Validate nominal attributes
-      if (!validDiaSemana.includes(data.diaSemana)) {
-        throw new Error('Día de la semana inválido. Seleccione un valor válido.');
+      if (data.hora < 0 || data.hora > 23) {
+        throw new Error('La hora debe estar entre 0 y 23.');
       }
-      if (!validJornada.includes(data.jornada)) {
-        throw new Error('Jornada inválida. Seleccione un valor válido.');
-      }
-      if (!validClima.includes(data.clima)) {
-        throw new Error('Clima inválido. Seleccione un valor válido.');
-      }
-      if (!validTipoServicio.includes(data.tipoServicio)) {
-        throw new Error('Tipo de servicio inválido. Seleccione un valor válido.');
-      }
-      if (!validPromocionesActivas.includes(data.promocionesActivas)) {
-        throw new Error('Promociones activas inválido. Seleccione un valor válido.');
-      }
-
-      // Validate numeric attributes
       if (data.temperatura < -50 || data.temperatura > 50) {
         throw new Error('Temperatura debe estar entre -50 y 50 °C.');
       }
@@ -86,20 +65,37 @@ const PredictionForm = () => {
         <h2>Predicción de Demanda</h2>
         <p className="form-subtitle">Complete el formulario para predecir la demanda del servicio de lavado</p>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="prediction-form">
         <div className="form-grid">
           <div className="form-column">
+            <div className="form-field">
+              <label htmlFor="idCliente">
+                <span className="field-icon">👤</span>
+                ID Cliente
+              </label>
+              <input
+                type="number"
+                id="idCliente"
+                name="idCliente"
+                value={formData.idCliente}
+                onChange={handleChange}
+                min="0"
+                placeholder="ID del cliente"
+                required
+              />
+            </div>
+
             <div className="form-field">
               <label htmlFor="diaSemana">
                 <span className="field-icon">📅</span>
                 Día de la Semana
               </label>
-              <select 
+              <select
                 id="diaSemana"
-                name="diaSemana" 
-                value={formData.diaSemana} 
-                onChange={handleChange} 
+                name="diaSemana"
+                value={formData.diaSemana}
+                onChange={handleChange}
                 required
               >
                 <option value="">Seleccione un día</option>
@@ -112,40 +108,39 @@ const PredictionForm = () => {
                 <option value="Domingo">Domingo</option>
               </select>
             </div>
-            
+
             <div className="form-field">
-              <label htmlFor="jornada">
+              <label htmlFor="hora">
                 <span className="field-icon">🕒</span>
-                Jornada
+                Hora (0–23)
               </label>
-              <select 
-                id="jornada"
-                name="jornada" 
-                value={formData.jornada} 
-                onChange={handleChange} 
+              <input
+                type="number"
+                id="hora"
+                name="hora"
+                value={formData.hora}
+                onChange={handleChange}
+                min="0"
+                max="23"
+                placeholder="Hora del día (ej: 8, 14, 20)"
                 required
-              >
-                <option value="">Seleccione la jornada</option>
-                <option value="Mañana">Mañana</option>
-                <option value="Tarde">Tarde</option>
-                <option value="Noche">Noche</option>
-              </select>
+              />
             </div>
-            
+
             <div className="form-field">
               <label htmlFor="temperatura">
                 <span className="field-icon">🌡️</span>
                 Temperatura (°C)
               </label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 id="temperatura"
-                name="temperatura" 
-                value={formData.temperatura} 
-                onChange={handleChange} 
-                step="0.1" 
+                name="temperatura"
+                value={formData.temperatura}
+                onChange={handleChange}
+                step="0.1"
                 placeholder="Temperatura en grados Celsius"
-                required 
+                required
               />
             </div>
           </div>
@@ -156,11 +151,11 @@ const PredictionForm = () => {
                 <span className="field-icon">🌤️</span>
                 Clima
               </label>
-              <select 
+              <select
                 id="clima"
-                name="clima" 
-                value={formData.clima} 
-                onChange={handleChange} 
+                name="clima"
+                value={formData.clima}
+                onChange={handleChange}
                 required
               >
                 <option value="">Seleccione el clima</option>
@@ -169,17 +164,17 @@ const PredictionForm = () => {
                 <option value="Nublado">Nublado</option>
               </select>
             </div>
-            
+
             <div className="form-field">
               <label htmlFor="tipoServicio">
                 <span className="field-icon">🚿</span>
                 Tipo de Servicio
               </label>
-              <select 
+              <select
                 id="tipoServicio"
-                name="tipoServicio" 
-                value={formData.tipoServicio} 
-                onChange={handleChange} 
+                name="tipoServicio"
+                value={formData.tipoServicio}
+                onChange={handleChange}
                 required
               >
                 <option value="">Seleccione el servicio</option>
@@ -188,35 +183,35 @@ const PredictionForm = () => {
                 <option value="Premium">Premium</option>
               </select>
             </div>
-            
+
             <div className="form-field">
               <label htmlFor="historialVisitas">
                 <span className="field-icon">📊</span>
                 Historial de Visitas
               </label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 id="historialVisitas"
-                name="historialVisitas" 
-                value={formData.historialVisitas} 
-                onChange={handleChange} 
-                min="0" 
-                step="1" 
+                name="historialVisitas"
+                value={formData.historialVisitas}
+                onChange={handleChange}
+                min="0"
+                step="1"
                 placeholder="Número de visitas previas"
-                required 
+                required
               />
             </div>
-            
+
             <div className="form-field">
               <label htmlFor="promocionesActivas">
                 <span className="field-icon">🏷️</span>
                 Promociones Activas
               </label>
-              <select 
+              <select
                 id="promocionesActivas"
-                name="promocionesActivas" 
-                value={formData.promocionesActivas} 
-                onChange={handleChange} 
+                name="promocionesActivas"
+                value={formData.promocionesActivas}
+                onChange={handleChange}
                 required
               >
                 <option value="">Seleccione una opción</option>
@@ -250,15 +245,15 @@ const PredictionForm = () => {
           <div className="result-content">
             <div className="result-item">
               <span className="result-label">Clientes Estimados:</span>
-              <span className="result-value">{predictionResult.clientesEstimados}</span>
+              <span className="result-value">{predictionResult.prediccion}</span>
             </div>
             <div className="result-item">
               <span className="result-label">Confianza:</span>
-              <span className="result-value">{predictionResult.confianza}%</span>
+              <span className="result-value">{predictionResult.confianza}</span>
               <div className="confidence-bar">
-                <div 
-                  className="confidence-fill" 
-                  style={{ width: `${predictionResult.confianza}%` }}
+                <div
+                  className="confidence-fill"
+                  style={{ width: predictionResult.confianza }}
                 ></div>
               </div>
             </div>

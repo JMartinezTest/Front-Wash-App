@@ -17,6 +17,7 @@ import WashForm from "./washed/WashForm";
 import EmployeePayments from "./Employee/EmployeePayments";
 import PredictionForm from "./predictions/PredictionForm";
 import PredictionHistory from "./predictions/PredictionHistory";
+import Chat from "./chat/Chat";
 
 const createProtectedElement = (Component) => (
   <ProtectedRoute>
@@ -59,6 +60,7 @@ const PrivateRoutes = [
     path: "/prediction-history",
     element: createProtectedElement(PredictionHistory),
   },
+  { path: "/chat", element: createProtectedElement(Chat) },
 ];
 
 export default PrivateRoutes;
