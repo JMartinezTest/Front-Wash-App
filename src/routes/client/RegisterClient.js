@@ -22,7 +22,7 @@ function RegisterClient() {
     };
 
     try {
-      const response = await fetch("http://localhost:8081/clients/register", {
+      const response = await fetch("https://backwashapp-production.up.railway.app/clients/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

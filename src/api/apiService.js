@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8083";
+const API_BASE_URL = "https://backwashapp-production.up.railway.app/";
 
 const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
