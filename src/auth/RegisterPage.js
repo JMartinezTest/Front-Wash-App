@@ -10,7 +10,7 @@ const RegisterPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8081/auth/register", {
+      const response = await fetch("https://backwashapp-production.up.railway.app/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
