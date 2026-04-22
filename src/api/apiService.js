@@ -127,4 +127,14 @@ export const apiService = {
       method: "POST",
       body: JSON.stringify({ message }),
     }),
+
+  // Registros de pago
+  savePaymentRecord: (record) =>
+    fetchWithAuth("/payment-records/save", {
+      method: "POST",
+      body: JSON.stringify(record),
+    }),
+  getPaymentRecords: () => fetchWithAuth("/payment-records"),
+  getPaymentRecordsByEmployee: (employeeId) =>
+    fetchWithAuth(`/payment-records/employee/${employeeId}`),
 };

@@ -31,11 +31,15 @@ const Chat = () => {
     try {
       const data = await apiService.sendChatMessage(text);
       setMessages((prev) => [...prev, { role: 'assistant', text: data.response }]);
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', text: 'Lo siento, ocurrió un error. Inténtalo de nuevo.' },
-      ]);
+    } catch (err) {
+      let errorMsg = 'Lo siento, ocurrió un error al conectar con el asistente.';
+      try {
+        const parsed = JSON.parse(err.message);
+        if (parsed?.error) errorMsg = parsed.error;
+      } catch {
+        if (err.message) errorMsg = err.message;
+      }
+      setMessages((prev) => [...prev, { role: 'assistant', text: '⚠️ ' + errorMsg }]);
     } finally {
       setLoading(false);
     }

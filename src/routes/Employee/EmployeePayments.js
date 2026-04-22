@@ -6,36 +6,60 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./EmployeePayments.css";
 
 const EmployeePayments = () => {
-  const [payments, setPayments] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [calculatedPayment, setCalculatedPayment] = useState(null);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [calculating, setCalculating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [success, setSuccess] = useState("");
 
   const getDefaultDateRange = () => {
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setMonth(endDate.getMonth() - 1);
-    startDate.setHours(0, 0, 0, 0);
-    endDate.setHours(23, 59, 59, 999);
-    return [startDate, endDate];
+    const end = new Date();
+    const start = new Date();
+    start.setMonth(end.getMonth() - 1);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+    return [start, end];
   };
 
   const [dateRange, setDateRange] = useState(getDefaultDateRange());
   const [startDate, endDate] = dateRange;
 
+  const fetchHistory = async () => {
+    try {
+      const data = await apiService.getPaymentRecords();
+      setHistory(data || []);
+    } catch {
+      setHistory([]);
+    }
+  };
+
   useEffect(() => {
-    apiService.getEmployees()
-      .then((data) => { setEmployees(data); setLoading(false); })
-      .catch((err) => { setError("Error al cargar empleados: " + err.message); setLoading(false); });
+    Promise.all([apiService.getEmployees(), apiService.getPaymentRecords()])
+      .then(([emp, hist]) => {
+        setEmployees(emp || []);
+        setHistory(hist || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Error al cargar datos: " + err.message);
+        setLoading(false);
+      });
   }, []);
+
+  const handleDateRangeChange = (update) => {
+    if (update[0] && update[1]) setDateRange(update);
+  };
 
   const calculatePayments = async () => {
     if (!selectedEmployee) return;
     setCalculating(true);
     setError("");
-    setPayments([]);
+    setSuccess("");
+    setCalculatedPayment(null);
 
     try {
       const adjustedStart = new Date(startDate);
@@ -43,42 +67,64 @@ const EmployeePayments = () => {
       const adjustedEnd = new Date(endDate);
       adjustedEnd.setHours(23, 59, 59, 999);
 
-      const paymentsData = await apiService.calculateEmployeePayment(
-        selectedEmployee,
-        adjustedStart,
-        adjustedEnd
+      const total = await apiService.calculateEmployeePayment(
+        selectedEmployee, adjustedStart, adjustedEnd
       );
 
       const employee = employees.find((e) => e.id === selectedEmployee);
-      setPayments([
-        {
-          id: 1,
-          employee: employee ? `${employee.name} ${employee.lastName}` : selectedEmployee,
-          period: `${adjustedStart.toLocaleDateString()} - ${adjustedEnd.toLocaleDateString()}`,
-          total: typeof paymentsData === "number" ? paymentsData : 0,
-          details: `Calculado el ${new Date().toLocaleDateString()}`,
-        },
-      ]);
+      setCalculatedPayment({
+        employeeId: selectedEmployee,
+        employeeName: employee ? `${employee.name} ${employee.lastName}` : selectedEmployee,
+        startDate: adjustedStart,
+        endDate: adjustedEnd,
+        totalPayment: typeof total === "number" ? total : 0,
+      });
     } catch (err) {
-      setError("Error al calcular el pago: " + (err.message || "Intenta de nuevo"));
+      setError("Error al calcular: " + (err.message || "Intenta de nuevo"));
     } finally {
       setCalculating(false);
     }
   };
 
-  const handleDateRangeChange = (update) => {
-    if (update[0] && update[1]) setDateRange(update);
+  const handleSave = async () => {
+    if (!calculatedPayment) return;
+    setSaving(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      await apiService.savePaymentRecord(calculatedPayment);
+      setSuccess("✅ Pago guardado correctamente");
+      setCalculatedPayment(null);
+      await fetchHistory();
+    } catch (err) {
+      setError("Error al guardar: " + (err.message || "Intenta de nuevo"));
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const columns = [
-    { key: "employee", title: "Empleado" },
-    { key: "period", title: "Periodo" },
+  const historyColumns = [
     {
-      key: "total",
-      title: "Total a Pagar (35%)",
-      render: (payment) => `$${Number(payment.total).toFixed(2)}`,
+      key: "employeeName",
+      title: "Empleado",
     },
-    { key: "details", title: "Detalles" },
+    {
+      key: "period",
+      title: "Periodo",
+      render: (r) =>
+        `${new Date(r.startDate).toLocaleDateString()} - ${new Date(r.endDate).toLocaleDateString()}`,
+    },
+    {
+      key: "totalPayment",
+      title: "Total Pagado (35%)",
+      render: (r) => `$${Number(r.totalPayment).toFixed(2)}`,
+    },
+    {
+      key: "calculatedAt",
+      title: "Registrado",
+      render: (r) => new Date(r.calculatedAt).toLocaleString(),
+    },
   ];
 
   if (loading) return <div>Cargando datos...</div>;
@@ -90,35 +136,24 @@ const EmployeePayments = () => {
       </div>
 
       {error && (
-        <div style={{ background: "#fee2e2", color: "#b91c1c", padding: "10px 14px", borderRadius: "8px", marginBottom: "16px" }}>
+        <div style={{ background: "#fee2e2", color: "#b91c1c", padding: "10px 14px", borderRadius: "8px", marginBottom: "12px" }}>
           ⚠️ {error}
         </div>
       )}
-
-      <div className="date-range-info">
-        <p>
-          <strong>Periodo seleccionado:</strong>{" "}
-          {startDate.toLocaleDateString()} - {endDate.toLocaleDateString()}
-        </p>
-        <p>
-          <small>
-            Duración:{" "}
-            {Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24))} días
-          </small>
-        </p>
-      </div>
+      {success && (
+        <div style={{ background: "#dcfce7", color: "#166534", padding: "10px 14px", borderRadius: "8px", marginBottom: "12px" }}>
+          {success}
+        </div>
+      )}
 
       <div className="payment-controls">
         <div className="form-group">
           <label>Empleado:</label>
-          <select
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
-          >
+          <select value={selectedEmployee} onChange={(e) => setSelectedEmployee(e.target.value)}>
             <option value="">Seleccionar empleado</option>
-            {employees.map((employee) => (
-              <option key={employee.id} value={employee.id}>
-                {employee.name} {employee.lastName}
+            {employees.map((e) => (
+              <option key={e.id} value={e.id}>
+                {e.name} {e.lastName}
               </option>
             ))}
           </select>
@@ -129,10 +164,8 @@ const EmployeePayments = () => {
             <label>Fecha Inicio:</label>
             <DatePicker
               selected={startDate}
-              onChange={(date) => handleDateRangeChange([date, endDate])}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
+              onChange={(d) => handleDateRangeChange([d, endDate])}
+              selectsStart startDate={startDate} endDate={endDate}
               maxDate={new Date()}
             />
           </div>
@@ -140,12 +173,9 @@ const EmployeePayments = () => {
             <label>Fecha Fin:</label>
             <DatePicker
               selected={endDate}
-              onChange={(date) => handleDateRangeChange([startDate, date])}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              maxDate={new Date()}
+              onChange={(d) => handleDateRangeChange([startDate, d])}
+              selectsEnd startDate={startDate} endDate={endDate}
+              minDate={startDate} maxDate={new Date()}
             />
           </div>
           <div className="calc-button">
@@ -156,10 +186,31 @@ const EmployeePayments = () => {
         </div>
       </div>
 
+      {calculatedPayment && (
+        <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "16px 20px", marginBottom: "20px" }}>
+          <h3 style={{ margin: "0 0 10px", color: "#1e40af" }}>Resultado del cálculo</h3>
+          <p style={{ margin: "4px 0" }}><strong>Empleado:</strong> {calculatedPayment.employeeName}</p>
+          <p style={{ margin: "4px 0" }}>
+            <strong>Periodo:</strong> {new Date(calculatedPayment.startDate).toLocaleDateString()} — {new Date(calculatedPayment.endDate).toLocaleDateString()}
+          </p>
+          <p style={{ margin: "4px 0", fontSize: "18px", color: "#1e40af" }}>
+            <strong>Total a pagar (35%):</strong> ${Number(calculatedPayment.totalPayment).toFixed(2)}
+          </p>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            style={{ marginTop: "12px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", padding: "8px 20px", cursor: "pointer", fontSize: "14px" }}
+          >
+            {saving ? "Guardando..." : "Guardar Pago"}
+          </button>
+        </div>
+      )}
+
+      <h3 style={{ marginTop: "24px", marginBottom: "10px" }}>Historial de Pagos Guardados</h3>
       <DataTable
-        columns={columns}
-        data={payments}
-        emptyMessage="Seleccione un empleado y un rango de fechas, luego presione Calcular Pago"
+        columns={historyColumns}
+        data={history}
+        emptyMessage="No hay pagos guardados aún"
       />
     </div>
   );
