@@ -1,3 +1,4 @@
+import Dashboard from "./dashboard/Dashboard";
 import ProtectedRoute from "../auth/protectedRoute";
 import RegisterService from "./service-offered/RegisterService";
 import Service from "./service-offered/Service";
@@ -36,7 +37,7 @@ const PrivateRoutes = [
   { path: "/register-car", element: createProtectedElement(RegisterCar) },
   { path: "/cars", element: createProtectedElement(Cars) },
   { path: "/cars/new", element: createProtectedElement(CarForm) },
-  { path: "/cars/edit/:id", element: createProtectedElement(CarForm) },
+  { path: "/cars/edit/:licencePlate", element: createProtectedElement(CarForm) },
   { path: "/employees", element: createProtectedElement(Employees) },
   { path: "/employees/new", element: createProtectedElement(EmployeeForm) },
   {
@@ -51,6 +52,7 @@ const PrivateRoutes = [
   { path: "/clients/new", element: createProtectedElement(ClientForm) },
   { path: "/clients/edit/:id", element: createProtectedElement(ClientForm) },
   { path: "/register-client", element: createProtectedElement(RegisterClient) },
+  { path: "/inicio", element: createProtectedElement(Dashboard) },
   { path: "/washes", element: createProtectedElement(WashHistory) },
   { path: "/washes/new", element: createProtectedElement(WashForm) },
   { path: "/washes/edit/:id", element: createProtectedElement(WashForm) },
