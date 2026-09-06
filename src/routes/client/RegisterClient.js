@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_BASE_URL } from "../../api/config";
 
 function RegisterClient() {
   const [clientName, setClientName] = useState("");
@@ -22,7 +23,7 @@ function RegisterClient() {
     };
 
     try {
-      const response = await fetch("https://backwashapp-production.up.railway.app/clients/register", {
+      const response = await fetch(`${API_BASE_URL}/clients/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

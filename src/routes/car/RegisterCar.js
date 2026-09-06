@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from "../../api/config";
 
 const RegisterCar = () => {
   const [newCar, setNewCar] = useState({ licencePlate: '', make: '', color: '' });
@@ -10,7 +11,7 @@ const RegisterCar = () => {
   const handleRegisterCar = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://backwashapp-production.up.railway.app/cars/register', {
+      const response = await fetch(`${API_BASE_URL}/cars/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
