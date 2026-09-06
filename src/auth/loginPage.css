@@ -1,159 +1,122 @@
-:root {
-  --primary-blue: #1a237e;
-  --secondary-blue: #3949ab;
-  --accent-blue: #2fa1ff;
-  --light-bg: #f4f7fb;
-  --white: #fff;
-  --gray: #545b67;
-  --border-radius: 14px;
-  --shadow: 0 8px 32px rgba(30, 41, 59, 0.14);
-  --error: #d64045;
+/* Pantalla de acceso: marca a la izquierda, formulario a la derecha. */
+
+.acceso {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  min-height: 100vh;
 }
 
-/* Centrado vertical y horizontal */
-.login-wrapper {
-  height: 80dvh;
-  width: 40%;
+/* ------------------------------------------------------------- Marca ---- */
+
+.acceso__marca {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: var(--white);
-  margin-top: 10%;
-  border-radius: var(--border-radius);
+  padding: var(--e12);
+  color: #fff;
+  background: linear-gradient(150deg, var(--azul-900) 0%, var(--azul-800) 55%, var(--azul-700) 100%);
 }
-.login-image {
-  display: flex;
+
+.acceso__marca-contenido { max-width: 420px; }
+
+.acceso__logo {
+  display: inline-flex;
   align-items: center;
-  height: 90dvh;
-  width: 15dvw;
-  position: relative;
-  left: -10dvw;
-
-
-}
-.company-logo {
-  height: 30dvh;
-  transform: rotate(-90deg);
-  object-fit: fill;
-}
-/* Tarjeta de login */
-.login-card {
-  background: var(--white);
-  border-radius: var(--border-radius);
-  max-width: 400px;
-  width: 100%;
-  padding: 36px 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Encabezado */
-.card-header {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
   justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.login-title {
+  width: 52px;
+  height: 52px;
+  margin-bottom: var(--e5);
   font-size: 24px;
-  font-weight: 700;
-  color: var(--primary-blue);
-  margin-bottom: 8px;
+  background: rgba(255, 255, 255, .14);
+  border-radius: var(--r-lg);
 }
 
-.login-subtitle {
-  font-size: 15px;
-  color: #7a7e87;
-  margin-bottom: 18px;
-}
-
-
-
-/* Formulario */
-.login-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group {
-  margin-bottom: 18px;
-  width: 100%;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 7px;
-  font-size: 14px;
+.acceso__titulo {
+  margin-bottom: var(--e4);
+  font-size: 32px;
   font-weight: 500;
-  color: var(--gray);
+  color: #fff;
+  letter-spacing: -.02em;
 }
 
-.form-control {
-  width: 100%;
-  padding: 12px 14px;
+.acceso__titulo strong { font-weight: 700; color: var(--azul-500); }
+
+.acceso__lema {
   font-size: 15px;
-  color: var(--gray);
-  background: var(--light-bg);
-  border: 1.5px solid #cfd8dc;
-  border-radius: 6px;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  outline: none;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, .78);
 }
 
-.form-control:focus {
-  border-color: var(--secondary-blue);
-  background: var(--white);
-  box-shadow: 0 0 0 3px rgba(57, 73, 171, 0.1);
+.acceso__lista {
+  margin: var(--e6) 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.login-button {
-  background: var(--secondary-blue);
-  color: var(--white);
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-  width: 95%;
+.acceso__lista li {
+  position: relative;
+  padding-left: 26px;
+  margin-bottom: var(--e3);
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, .8);
 }
 
-.login-button:hover {
-  background: var(--primary-blue);
-  transform: translateY(-2px);
+.acceso__lista li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 7px;
+  height: 7px;
+  background: var(--azul-500);
+  border-radius: 50%;
 }
 
-/* Mensajes de error y éxito */
-.error-message {
-  color: var(--error);
-  background: #fdebec;
-  border-radius: 6px;
-  padding: 10px;
-  margin-bottom: 14px;
-  text-align: center;
-  font-weight: 500;
-}
+/* -------------------------------------------------------- Formulario ---- */
 
-/* Footer links */
-.login-footer-links {
+.acceso__panel {
   display: flex;
-  justify-content: end;
-  margin-top: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: var(--e12) var(--e8);
+  background: var(--superficie);
+}
+
+.acceso__formulario { width: 100%; max-width: 360px; }
+
+.acceso__encabezado { margin-bottom: var(--e6); }
+.acceso__encabezado h2 { font-size: 22px; }
+.acceso__encabezado p { margin-top: var(--e1); font-size: 13.5px; color: var(--texto-suave); }
+
+.acceso__formulario .field { margin-bottom: var(--e4); }
+
+/* Campo con icono a la izquierda */
+.campo-icono { position: relative; }
+
+.campo-icono__glifo {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
   font-size: 13px;
-  width: 100%;
+  color: var(--texto-tenue);
+  pointer-events: none;
 }
 
-.login-footer-links a {
-  color: var(--secondary-blue);
-  text-decoration: none;
-  transition: color 0.2s;
+.campo-icono input { padding-left: 36px; }
+
+.acceso__boton { margin-top: var(--e2); padding: 11px 16px; }
+
+.spinner--claro { border-color: rgba(255, 255, 255, .35); border-top-color: #fff; width: 18px; height: 18px; }
+
+.acceso__pie {
+  margin-top: var(--e6);
+  font-size: 13px;
+  text-align: center;
+  color: var(--texto-suave);
 }
 
-.login-footer-links a:hover {
-  color: var(--primary-blue);
+@media (max-width: 880px) {
+  .acceso { grid-template-columns: 1fr; }
+  .acceso__marca { display: none; }
+  .acceso__panel { padding: var(--e8) var(--e5); }
 }

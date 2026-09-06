@@ -1,5 +1,7 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../api/config";
+import { useNavigate, Link } from "react-router-dom";
+import { FaCarSide, FaUser, FaLock } from "react-icons/fa";
 import AuthContext from "./authContext";
 import "./loginPage.css";
 
@@ -17,81 +19,99 @@ function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://backwashapp-production.up.railway.app/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
       });
 
       if (response.ok) {
         const token = await response.text();
         localStorage.setItem("token", token);
         login();
-        navigate("/services");
+        navigate("/inicio");
       } else {
         const errorText = await response.text();
-        setError(errorText || "Credenciales incorrectas");
+        setError(errorText || "Usuario o contraseña incorrectos.");
       }
     } catch (error) {
-      setError("Error al conectar con el servidor");
-      console.error("Login error:", error);
+      setError("No se pudo conectar con el servidor.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className='login-wrapper'> 
-      <div className='login-image'>
-        <img
-          src="/images/mainlogo-cleanbg.png"
-          alt="Logo Empresa"
-          className="company-logo"
-        />
-      </div>
-      <div className="login-card">
-        <div className="card-header">
-          <p>Accede a tu cuenta corporativa</p>
+    <div className="acceso">
+      {/* Panel de marca: presenta el producto mientras el foco esta en el formulario */}
+      <aside className="acceso__marca">
+        <div className="acceso__marca-contenido">
+          <span className="acceso__logo"><FaCarSide /></span>
+          <h1 className="acceso__titulo">WashApp<strong>PRO</strong></h1>
+          <p className="acceso__lema">
+            Gestión integral para el Lavadero San Felipe: lavados, clientes,
+            comisiones y predicción de demanda en un solo lugar.
+          </p>
+          <ul className="acceso__lista">
+            <li>Registro de lavados y control de servicios</li>
+            <li>Cálculo automático de comisiones</li>
+            <li>Asistente con acceso a tus datos reales</li>
+          </ul>
         </div>
-        <form className="login-form" onSubmit={handleSubmit}>
-          {error && <div className="error-message">{error}</div>}
-          <div className="form-group">
-            <label htmlFor="username">Usuario</label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="username"
-            />
-            <span className="icon-user" />
+      </aside>
+
+      <main className="acceso__panel">
+        <div className="acceso__formulario">
+          <div className="acceso__encabezado">
+            <h2>Iniciar sesión</h2>
+            <p>Accede con tu cuenta para gestionar el lavadero.</p>
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
-            <span className="icon-lock" />
-          </div>
-          <div className="form-group">
-            <button className="login-button" type="submit" disabled={isLoading}>
-              {isLoading ? <span className="spinner" /> : "Iniciar sesión"}
+
+          {error && <div className="alert alert--error">{error}</div>}
+
+          <form onSubmit={handleSubmit}>
+            <div className="field">
+              <label htmlFor="username">Usuario</label>
+              <div className="campo-icono">
+                <FaUser className="campo-icono__glifo" />
+                <input
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  autoComplete="username"
+                  placeholder="Tu usuario"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="field">
+              <label htmlFor="password">Contraseña</label>
+              <div className="campo-icono">
+                <FaLock className="campo-icono__glifo" />
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  placeholder="Tu contraseña"
+                  required
+                />
+              </div>
+            </div>
+
+            <button className="btn btn--primary btn--block acceso__boton" type="submit" disabled={isLoading}>
+              {isLoading ? <span className="spinner spinner--claro" /> : "Iniciar sesión"}
             </button>
-          </div>
-          <div className="login-footer-links">
-            <a href="/support">Soporte</a>
-          </div>
-        </form>
-      </div>
+          </form>
+
+          <p className="acceso__pie">
+            ¿Problemas para entrar? <Link to="/support">Contacta con soporte</Link>
+          </p>
+        </div>
+      </main>
     </div>
   );
 }

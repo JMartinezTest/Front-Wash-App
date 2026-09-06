@@ -1,0 +1,109 @@
+/* Panel de inicio: metricas arriba, actividad reciente debajo. */
+
+.tarjetas-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--e4);
+  margin-bottom: var(--e6);
+}
+
+.tarjeta-fantasma { height: 96px; }
+
+.tarjeta-metrica {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--e4);
+  padding: var(--e5);
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sombra);
+}
+
+.tarjeta-metrica__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  font-size: 15px;
+  border-radius: var(--r-md);
+  flex-shrink: 0;
+}
+
+.tarjeta-metrica__icono--azul    { background: var(--azul-50);  color: var(--azul-600); }
+.tarjeta-metrica__icono--verde   { background: #ecfdf5;         color: var(--exito); }
+.tarjeta-metrica__icono--violeta { background: #f5f3ff;         color: #7c3aed; }
+.tarjeta-metrica__icono--ambar   { background: var(--aviso-suave); color: var(--aviso); }
+
+.tarjeta-metrica__cuerpo { min-width: 0; }
+
+.tarjeta-metrica__etiqueta {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.tarjeta-metrica__valor {
+  margin: 2px 0;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--texto);
+}
+
+.tarjeta-metrica__pie { font-size: 12px; color: var(--texto-tenue); }
+
+/* ------------------------------------------------ Actividad reciente ---- */
+
+.panel-recientes__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e4);
+}
+
+.lista-recientes { margin: 0; padding: 0; list-style: none; }
+
+.lista-recientes__fila {
+  display: flex;
+  align-items: center;
+  gap: var(--e4);
+  padding: var(--e4) var(--e6);
+  border-bottom: 1px solid var(--borde);
+}
+
+.lista-recientes__fila:last-child { border-bottom: none; }
+
+.lista-recientes__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  font-size: 13px;
+  color: var(--azul-600);
+  background: var(--azul-50);
+  border-radius: var(--r-full);
+  flex-shrink: 0;
+}
+
+.lista-recientes__datos { flex: 1; min-width: 0; }
+
+.lista-recientes__cliente {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texto);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lista-recientes__meta { font-size: 12.5px; color: var(--texto-tenue); }
+
+.lista-recientes__total {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
