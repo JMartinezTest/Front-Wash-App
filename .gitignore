@@ -11,3 +11,11 @@ dist/
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# Env
+.env
+
+# Un unico gestor de paquetes: pnpm
+package-lock.json
+bun.lock
+yarn.lock
