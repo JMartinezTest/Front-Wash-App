@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from "../api/config";
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
@@ -10,7 +11,7 @@ const RegisterPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://backwashapp-production.up.railway.app/auth/register", {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

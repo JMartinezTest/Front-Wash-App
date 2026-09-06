@@ -1,88 +1,60 @@
-:root {
-  --primary-blue: #1a237e;
-  --secondary-blue: #3949ab;
-  --accent-blue: #2fa1ff;
-  --light-bg: #f4f7fb;
-  --white: #fff;
-  --gray: #545b67;
-  --border-radius: 14px;
-  --shadow: 0 8px 32px rgba(30, 41, 59, 0.14);
-  --error: #d64045;
-  --success: #2ecc71;
+/* Pagos: calculo a la izquierda, resultado a la derecha, historial debajo. */
+
+.pagos-columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: var(--e5);
+  align-items: start;
+  margin-bottom: var(--e8);
 }
 
-.page-container {
-background: var(--white);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  max-width: 800px;
-  padding: 8px 28px;
-  display: flex;
-  flex-direction: column;
-}
+.resultado-pago__empleado { font-size: 16px; font-weight: 600; color: var(--texto); }
+.resultado-pago__periodo { margin-top: 2px; font-size: 13px; color: var(--texto-suave); }
 
-.page-header {
+.resultado-pago__cifra {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: center;
+  gap: var(--e3);
+  margin: var(--e5) 0;
+  padding: var(--e4);
+  background: var(--azul-50);
+  border: 1px solid var(--azul-100);
+  border-radius: var(--r-md);
+  font-size: 13px;
+  color: var(--azul-800);
 }
 
-.payment-controls {
-  display: flex;
-  flex-wrap: wrap;
-  background-color: #ddd;
-  padding: 10 20 0;
-  border-radius: 10px;
-}
-.date-range-info p{
-  color: var(--accent-blue)
+.resultado-pago__cifra strong {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--azul-800);
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
 }
 
-.form-dates {
-  display: flex;
-  flex-direction: row;
-  min-width: 200px;
-  gap: 8px;
-} 
+.pagos-historial-cabecera { margin-bottom: var(--e4); }
 
-.calc-button {
-  padding-top: 0.2rem;
+/* El selector de fechas debe verse como el resto de campos. */
+.react-datepicker-wrapper { width: 100%; }
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 9px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--texto);
+  background: var(--superficie);
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--r-md);
 }
 
-.form-group label {
-  margin-bottom: 5px;
-  font-weight: 500;
+.react-datepicker__input-container input:focus {
+  outline: none;
+  border-color: var(--azul-500);
+  box-shadow: var(--anillo-foco);
 }
 
-.form-group select,
-.form-group input {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-button {
-  padding: 8px 16px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  height: 36px;
-}
-
-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.react-datepicker-wrapper {
-  width: auto;
-}
-
-.date-range-info {
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-  color:aliceblue
+@media (max-width: 1000px) {
+  .pagos-columnas { grid-template-columns: 1fr; }
 }

@@ -75,15 +75,16 @@ const EmployeeForm = () => {
   if (loading) return <div>Cargando datos del empleado...</div>;
 
   return (
-    <div className="page-container">
-      <h2>{id ? 'Editar Empleado' : 'Nuevo Empleado'}</h2>
-      <Form
-        fields={fields}
-        onSubmit={handleSubmit}
-        error={error}
-        submitText={id ? 'Actualizar' : 'Registrar'}
-      />
-    </div>
+    <Form
+      title={id ? 'Editar empleado' : 'Nuevo empleado'}
+      subtitle="Los empleados reciben el 35% de comisión por los servicios que realizan."
+      fields={fields}
+      onSubmit={handleSubmit}
+      error={error}
+      successMessage={successMessage}
+      submitText={id ? 'Guardar cambios' : 'Registrar empleado'}
+      cancelTo="/employees"
+    />
   );
 };
 

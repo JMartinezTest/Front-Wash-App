@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiService } from '../../api/apiService';
 import Form from '../../components/Forms';  
-import './ClientForm.css';
-
 const ClientForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -74,77 +72,32 @@ const ClientForm = () => {
   };
 
   const fields = [
-    {
-      name: 'name',
-      label: 'Nombre',
-      type: 'text',
-      value: formData.name,
-      onChange: handleChange,
-      required: true
-    },
-    {
-      name: 'lastName',
-      label: 'Apellido',
-      type: 'text',
-      value: formData.lastName,
-      onChange: handleChange,
-      required: true
-    },
-    {
-      name: 'nit',
-      label: 'NIT',
-      type: 'text',
-      value: formData.nit,
-      onChange: handleChange,
-      required: true
-    },
-    {
-      name: 'phoneNumber',
-      label: 'Teléfono',
-      type: 'tel',
-      value: formData.phone,
-      onChange: handleChange,
-      required: true
-    },
-    {
-      name: 'email',
-      label: 'Email',
-      type: 'email',
-      value: formData.email,
-      onChange: handleChange,
-      required: true
-    },
-    {
-      name: 'address',
-      label: 'Dirección',
-      type: 'text',
-      value: formData.address,
-      onChange: handleChange,
-      required: true
-    }
+    { name: 'name', label: 'Nombre', value: formData.name, onChange: handleChange, required: true },
+    { name: 'lastName', label: 'Apellido', value: formData.lastName, onChange: handleChange, required: true },
+    { name: 'nit', label: 'NIT', value: formData.nit, onChange: handleChange,
+      hint: 'Documento o NIT para la facturación.' },
+    { name: 'phoneNumber', label: 'Teléfono', type: 'tel', value: formData.phoneNumber, onChange: handleChange },
   ];
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Cargando datos del cliente...</p>
+      <div className="card">
+        <div className="state"><span className="spinner" /><p className="state__text">Cargando cliente…</p></div>
       </div>
     );
   }
 
   return (
-    <div className="client-form-container">
-      <h2>{id ? 'Editar Cliente' : 'Registrar Nuevo Cliente'}</h2>
-      
-      <Form
-        fields={fields}
-        onSubmit={handleSubmit}
-        error={error}
-        successMessage={successMessage}
-        submitText={id ? 'Actualizar Cliente' : 'Registrar Cliente'}
-      />
-    </div>
+    <Form
+      title={id ? 'Editar cliente' : 'Nuevo cliente'}
+      subtitle="Los clientes se asocian a los lavados que registres."
+      fields={fields}
+      onSubmit={handleSubmit}
+      error={error}
+      successMessage={successMessage}
+      submitText={id ? 'Guardar cambios' : 'Registrar cliente'}
+      cancelTo="/clients"
+    />
   );
 };
 

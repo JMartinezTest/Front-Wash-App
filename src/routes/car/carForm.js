@@ -2,15 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiService } from "../../api/apiService";
 import Form from "../../components/Forms";
-import "./CarForm.css";
-
 const CarForm = () => {
   const { licencePlate } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     licencePlate: "",
     make: "",
-    year: "",
     color: "",
     clientId: "",
   });
@@ -82,76 +79,49 @@ const CarForm = () => {
     {
       name: "licencePlate",
       label: "Placa",
-      type: "text",
       value: formData.licencePlate,
       onChange: handleChange,
       required: true,
-      disabled: !!licencePlate, // Bloquear edición de placa si es edición
+      hint: "Identifica al vehículo en todo el sistema.",
     },
-    {
-      name: "make",
-      label: "Marca",
-      type: "text",
-      value: formData.make,
-      onChange: handleChange,
-      required: true,
-    },
-    {
-      name: "year",
-      label: "Año",
-      type: "number",
-      value: formData.year,
-      onChange: handleChange,
-      required: true,
-      min: 1990,
-      max: new Date().getFullYear() + 1,
-    },
-    {
-      name: "color",
-      label: "Color",
-      type: "text",
-      value: formData.color,
-      onChange: handleChange,
-      required: true,
-    },
+    { name: "make", label: "Marca", value: formData.make, onChange: handleChange, required: true },
+    { name: "color", label: "Color", value: formData.color, onChange: handleChange },
     {
       name: "clientId",
-      label: "Cliente",
+      label: "Cliente propietario",
       type: "select",
       value: formData.clientId,
       onChange: handleChange,
       required: true,
-      options: [
-        { value: "", label: "Seleccione un cliente" },
-        ...clients.map((client) => ({
-          value: client.id,
-          label: `${client.name} ${client.lastName} (${client.nit})`,
-        })),
-      ],
+      full: true,
+      options: clients.map((c) => ({
+        value: c.id,
+        label: `${c.name} ${c.lastName}${c.nit ? ` · ${c.nit}` : ""}`,
+      })),
+      hint: "Cada vehículo pertenece a un cliente.",
     },
   ];
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Cargando datos del vehículo...</p>
+      <div className="card">
+        <div className="state"><span className="spinner" /><p className="state__text">Cargando…</p></div>
       </div>
     );
   }
 
-  return (
-    <div className="car-form-container">
-      <h2>{licencePlate ? "Editar Vehículo" : "Registrar Nuevo Vehículo"}</h2>
 
-      <Form
-        fields={fields}
-        onSubmit={handleSubmit}
-        error={error}
-        successMessage={successMessage}
-        submitText={licencePlate ? "Actualizar Vehículo" : "Registrar Vehículo"}
-      />
-    </div>
+  return (
+    <Form
+      title={licencePlate ? 'Editar vehículo' : 'Nuevo vehículo'}
+      subtitle="La placa identifica al vehículo en todo el sistema."
+      fields={fields}
+      onSubmit={handleSubmit}
+      error={error}
+      successMessage={successMessage}
+      submitText={licencePlate ? 'Guardar cambios' : 'Registrar vehículo'}
+      cancelTo="/cars"
+    />
   );
 };
 

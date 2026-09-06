@@ -3,6 +3,8 @@ import { apiService } from "../../api/apiService";
 import DataTable from "../../components/DataTable";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import PageState from "../../components/PageState";
+import { dinero, fechaCorta, fechaHora } from "../../utils/formato";
 import "./EmployeePayments.css";
 
 const EmployeePayments = () => {
@@ -105,114 +107,136 @@ const EmployeePayments = () => {
   };
 
   const historyColumns = [
-    {
-      key: "employeeName",
-      title: "Empleado",
-    },
+    { key: "employeeName", title: "Empleado" },
     {
       key: "period",
       title: "Periodo",
-      render: (r) =>
-        `${new Date(r.startDate).toLocaleDateString()} - ${new Date(r.endDate).toLocaleDateString()}`,
+      search: (r) => `${fechaCorta(r.startDate)} ${fechaCorta(r.endDate)}`,
+      render: (r) => `${fechaCorta(r.startDate)} — ${fechaCorta(r.endDate)}`,
     },
     {
       key: "totalPayment",
-      title: "Total Pagado (35%)",
-      render: (r) => `$${Number(r.totalPayment).toFixed(2)}`,
+      title: "Total pagado",
+      numeric: true,
+      render: (r) => dinero(r.totalPayment),
     },
-    {
-      key: "calculatedAt",
-      title: "Registrado",
-      render: (r) => new Date(r.calculatedAt).toLocaleString(),
-    },
+    { key: "calculatedAt", title: "Registrado", render: (r) => fechaHora(r.calculatedAt) },
   ];
 
-  if (loading) return <div>Cargando datos...</div>;
+  if (loading) return <PageState titulo="Pagos a empleados" cargando />;
 
   return (
-    <div className="page-container">
+    <>
       <div className="page-header">
-        <h2>Cálculo de Pagos a Empleados</h2>
-      </div>
-
-      {error && (
-        <div style={{ background: "#fee2e2", color: "#b91c1c", padding: "10px 14px", borderRadius: "8px", marginBottom: "12px" }}>
-          ⚠️ {error}
-        </div>
-      )}
-      {success && (
-        <div style={{ background: "#dcfce7", color: "#166534", padding: "10px 14px", borderRadius: "8px", marginBottom: "12px" }}>
-          {success}
-        </div>
-      )}
-
-      <div className="payment-controls">
-        <div className="form-group">
-          <label>Empleado:</label>
-          <select value={selectedEmployee} onChange={(e) => setSelectedEmployee(e.target.value)}>
-            <option value="">Seleccionar empleado</option>
-            {employees.map((e) => (
-              <option key={e.id} value={e.id}>
-                {e.name} {e.lastName}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-dates">
-          <div>
-            <label>Fecha Inicio:</label>
-            <DatePicker
-              selected={startDate}
-              onChange={(d) => handleDateRangeChange([d, endDate])}
-              selectsStart startDate={startDate} endDate={endDate}
-              maxDate={new Date()}
-            />
-          </div>
-          <div>
-            <label>Fecha Fin:</label>
-            <DatePicker
-              selected={endDate}
-              onChange={(d) => handleDateRangeChange([startDate, d])}
-              selectsEnd startDate={startDate} endDate={endDate}
-              minDate={startDate} maxDate={new Date()}
-            />
-          </div>
-          <div className="calc-button">
-            <button onClick={calculatePayments} disabled={!selectedEmployee || calculating}>
-              {calculating ? "Calculando..." : "Calcular Pago"}
-            </button>
-          </div>
+        <div className="page-header__titles">
+          <h1>Pagos a empleados</h1>
+          <p className="page-header__subtitle">
+            Calcula la comisión del 35% sobre los servicios realizados en un periodo.
+          </p>
         </div>
       </div>
 
-      {calculatedPayment && (
-        <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "16px 20px", marginBottom: "20px" }}>
-          <h3 style={{ margin: "0 0 10px", color: "#1e40af" }}>Resultado del cálculo</h3>
-          <p style={{ margin: "4px 0" }}><strong>Empleado:</strong> {calculatedPayment.employeeName}</p>
-          <p style={{ margin: "4px 0" }}>
-            <strong>Periodo:</strong> {new Date(calculatedPayment.startDate).toLocaleDateString()} — {new Date(calculatedPayment.endDate).toLocaleDateString()}
-          </p>
-          <p style={{ margin: "4px 0", fontSize: "18px", color: "#1e40af" }}>
-            <strong>Total a pagar (35%):</strong> ${Number(calculatedPayment.totalPayment).toFixed(2)}
-          </p>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            style={{ marginTop: "12px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", padding: "8px 20px", cursor: "pointer", fontSize: "14px" }}
-          >
-            {saving ? "Guardando..." : "Guardar Pago"}
-          </button>
-        </div>
-      )}
+      {error && <div className="alert alert--error">{error}</div>}
+      {success && <div className="alert alert--success">{success}</div>}
 
-      <h3 style={{ marginTop: "24px", marginBottom: "10px" }}>Historial de Pagos Guardados</h3>
+      <div className="pagos-columnas">
+        <section className="card">
+          <div className="card__header"><h2>Calcular comisión</h2></div>
+          <div className="card__body">
+            <div className="form-grid">
+              <div className="field field--full">
+                <label htmlFor="empleado">Empleado</label>
+                <select
+                  id="empleado"
+                  value={selectedEmployee}
+                  onChange={(e) => setSelectedEmployee(e.target.value)}
+                >
+                  <option value="">Seleccionar empleado</option>
+                  {employees.map((e) => (
+                    <option key={e.id} value={e.id}>{e.name} {e.lastName}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="field">
+                <label>Desde</label>
+                <DatePicker
+                  selected={startDate}
+                  onChange={(d) => handleDateRangeChange([d, endDate])}
+                  selectsStart startDate={startDate} endDate={endDate}
+                  maxDate={new Date()} dateFormat="dd/MM/yyyy"
+                />
+              </div>
+
+              <div className="field">
+                <label>Hasta</label>
+                <DatePicker
+                  selected={endDate}
+                  onChange={(d) => handleDateRangeChange([startDate, d])}
+                  selectsEnd startDate={startDate} endDate={endDate}
+                  minDate={startDate} maxDate={new Date()} dateFormat="dd/MM/yyyy"
+                />
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button
+                className="btn btn--primary"
+                onClick={calculatePayments}
+                disabled={!selectedEmployee || calculating}
+              >
+                {calculating ? "Calculando…" : "Calcular comisión"}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section className="card resultado-pago">
+          <div className="card__header"><h2>Resultado</h2></div>
+          <div className="card__body">
+            {!calculatedPayment ? (
+              <p className="resumen__vacio">
+                Elige un empleado y un periodo para ver cuánto le corresponde.
+              </p>
+            ) : (
+              <>
+                <p className="resultado-pago__empleado">{calculatedPayment.employeeName}</p>
+                <p className="resultado-pago__periodo">
+                  {fechaCorta(calculatedPayment.startDate)} — {fechaCorta(calculatedPayment.endDate)}
+                </p>
+                <div className="resultado-pago__cifra">
+                  <span>Comisión (35%)</span>
+                  <strong>{dinero(calculatedPayment.totalPayment)}</strong>
+                </div>
+                <button
+                  className="btn btn--primary btn--block"
+                  onClick={handleSave}
+                  disabled={saving}
+                >
+                  {saving ? "Guardando…" : "Guardar pago"}
+                </button>
+              </>
+            )}
+          </div>
+        </section>
+      </div>
+
+      <div className="page-header pagos-historial-cabecera">
+        <div className="page-header__titles">
+          <h2>Pagos guardados</h2>
+        </div>
+      </div>
+
       <DataTable
+        searchPlaceholder="Buscar por empleado…"
+        itemLabel="pagos"
+        pageSize={10}
         columns={historyColumns}
         data={history}
-        emptyMessage="No hay pagos guardados aún"
+        emptyMessage="Todavía no hay pagos guardados"
+        emptyHint="Cuando calcules y guardes una comisión aparecerá en este historial."
       />
-    </div>
+    </>
   );
 };
 

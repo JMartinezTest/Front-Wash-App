@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiService } from '../../api/apiService';
 import Form from '../../components/Forms';  
-import './ServiceForm.css';
-
 const ServiceForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -108,25 +106,24 @@ const ServiceForm = () => {
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Cargando datos del servicio...</p>
+      <div className="card">
+        <div className="state"><span className="spinner" /><p className="state__text">Cargando…</p></div>
       </div>
     );
   }
 
+
   return (
-    <div className="service-form-container">
-      <h2>{id ? 'Editar Servicio' : 'Registrar Nuevo Servicio'}</h2>
-      
-      <Form
-        fields={fields}
-        onSubmit={handleSubmit}
-        error={error}
-        successMessage={successMessage}
-        submitText={id ? 'Actualizar Servicio' : 'Registrar Servicio'}
-      />
-    </div>
+    <Form
+      title={id ? 'Editar servicio' : 'Nuevo servicio'}
+      subtitle="Define el precio y la duración del servicio."
+      fields={fields}
+      onSubmit={handleSubmit}
+      error={error}
+      successMessage={successMessage}
+      submitText={id ? 'Guardar cambios' : 'Registrar servicio'}
+      cancelTo="/services"
+    />
   );
 };
 
