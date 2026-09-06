@@ -1,85 +1,95 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaPlus } from 'react-icons/fa';
 import { apiService } from '../../api/apiService';
 import DataTable from '../../components/DataTable';
+import PageState from '../../components/PageState';
+import { AltaEmpleado } from '../../components/AltaRapida';
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [creando, setCreando] = useState(false);
 
   const fetchEmployees = async () => {
     try {
       const data = await apiService.getEmployees();
-      setEmployees(data);
-      setLoading(false);
+      setEmployees(Array.isArray(data) ? data : []);
+      setError('');
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'No se pudieron cargar los empleados.');
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
+  useEffect(() => { fetchEmployees(); }, []);
+
+  const handleDelete = async ({ id, name, lastName }) => {
+    if (!window.confirm(`¿Eliminar a ${name} ${lastName}?`)) return;
     try {
-      setEmployees(employees.filter(emp => emp.id !== id));
       await apiService.deleteEmployee(id);
     } catch (err) {
-      console.error(err.message);
+      setError(err.message || 'No se pudo eliminar el empleado.');
+    } finally {
+      fetchEmployees();
     }
   };
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
-
   const columns = [
-    { key: 'id', title: 'ID' },
-    { key: 'name', title: 'Nombre' },
-    { key: 'lastName', title: 'Apellido' },
-    { key: 'position', title: 'Posición' },
-    { key: 'phoneNumber', title: 'Teléfono' },
-    { 
-      key: 'actions', 
-      title: 'Acciones',
-      render: (item) => (
-        <div className="actions">
-          {/* <button 
-            size="small" 
-            onClick={() => navigate(`/employees/edit/${item.id}`)}
-          >
-            Editar
-          </button> */}
-          <button
-            size="small" 
-            variant="danger" 
-            onClick={() => handleDelete(item.id)}
-          >
-            Eliminar
-          </button>
-        </div>
-      )
-    }
+    { key: 'name', title: 'Nombre',
+      search: (e) => `${e.name} ${e.lastName}`,
+      render: (e) => `${e.name} ${e.lastName}` },
+    { key: 'position', title: 'Cargo', render: (e) => e.position || '—' },
+    { key: 'phoneNumber', title: 'Teléfono', render: (e) => e.phoneNumber || '—' },
   ];
 
-  if (loading) return <div>Cargando empleados...</div>;
-  if (error) return <div className="error">Error: {error}</div>;
+  if (loading) return <PageState titulo="Empleados" cargando />;
 
   return (
-    <div className="page-container">
+    <>
       <div className="page-header">
-        <h2>Gestión de Empleados</h2>
-        <button onClick={() => navigate('/employees/new')}>
-          + Nuevo Empleado
-        </button>
+        <div className="page-header__titles">
+          <h1>Empleados</h1>
+          <p className="page-header__subtitle">
+            {employees.length} {employees.length === 1 ? 'empleado' : 'empleados'} · comisión del 35%
+          </p>
+        </div>
+        <div className="page-header__actions">
+          <button className="btn btn--primary" onClick={() => setCreando(true)}>
+            <FaPlus /> Nuevo empleado
+          </button>
+        </div>
       </div>
-      
-      <DataTable 
-        columns={columns} 
-        data={employees} 
-        emptyMessage="No hay empleados registrados"
+
+      {error && <div className="alert alert--error">{error}</div>}
+
+      <DataTable
+        searchPlaceholder="Buscar por nombre o cargo…"
+        itemLabel="empleados"
+        pageSize={10}
+        columns={columns}
+        data={employees}
+        onDelete={handleDelete}
+        onEdit={(e) => navigate(`/employees/edit/${e.id}`)}
+        emptyMessage="Todavía no hay empleados"
+        emptyHint="Registra a tu equipo para poder asignarles lavados y calcular sus comisiones."
+        emptyAction={
+          <button className="btn btn--primary" onClick={() => setCreando(true)}>
+            <FaPlus /> Nuevo empleado
+          </button>
+        }
       />
-    </div>
+
+      {creando && (
+        <AltaEmpleado
+          onCreado={(nuevo) => { setEmployees((prev) => [...prev, nuevo]); setCreando(false); }}
+          onCerrar={() => setCreando(false)}
+        />
+      )}
+    </>
   );
 };
 
