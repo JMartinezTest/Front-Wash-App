@@ -14,12 +14,12 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #1a73e8;
+  background: var(--azul-600);
   color: #fff;
   border: none;
   font-size: 24px;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.5);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, .38);
   transition: transform 0.2s, background 0.2s;
   display: flex;
   align-items: center;
@@ -27,7 +27,7 @@
 }
 
 .chat-fab:hover {
-  background: #1558c0;
+  background: var(--azul-700);
   transform: scale(1.08);
 }
 
@@ -36,8 +36,9 @@
   width: 340px;
   height: 460px;
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sombra-lg);
+  border: 1px solid var(--borde);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -55,7 +56,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 14px;
-  background: #1a73e8;
+  background: var(--azul-600);
   color: #fff;
 }
 
@@ -111,7 +112,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #f5f7fa;
+  background: var(--superficie-sutil);
 }
 
 .chat-msg {
@@ -134,7 +135,7 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #1a73e8;
+  background: var(--azul-600);
   color: #fff;
   display: flex;
   align-items: center;
@@ -155,13 +156,13 @@
 
 .chat-msg.assistant .chat-msg-bubble {
   background: #fff;
-  color: #333;
+  color: var(--texto);
   border-bottom-left-radius: 4px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 .chat-msg.user .chat-msg-bubble {
-  background: #1a73e8;
+  background: var(--azul-600);
   color: #fff;
   border-bottom-right-radius: 4px;
 }
@@ -178,7 +179,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #aaa;
+  background: var(--texto-tenue);
   animation: bounce 1.2s infinite;
 }
 
@@ -196,13 +197,13 @@
   gap: 8px;
   padding: 10px 12px;
   background: #fff;
-  border-top: 1px solid #e8eaed;
+  border-top: 1px solid var(--borde);
 }
 
 .chat-popup-input input {
   flex: 1;
   padding: 8px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--borde-fuerte);
   border-radius: 20px;
   font-size: 13px;
   outline: none;
@@ -210,14 +211,14 @@
 }
 
 .chat-popup-input input:focus {
-  border-color: #1a73e8;
+  border-color: var(--azul-600);
 }
 
 .chat-popup-input button {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #1a73e8;
+  background: var(--azul-600);
   color: #fff;
   border: none;
   font-size: 16px;
@@ -230,10 +231,119 @@
 }
 
 .chat-popup-input button:hover:not(:disabled) {
-  background: #1558c0;
+  background: var(--azul-700);
 }
 
 .chat-popup-input button:disabled {
-  background: #c5d8f7;
+  background: var(--azul-100);
   cursor: not-allowed;
 }
+
+/* Acciones ejecutadas por el asistente */
+.chat-msg-content {
+  min-width: 0;
+}
+
+.chat-msg-actions {
+  list-style: none;
+  margin: 5px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chat-msg-actions li {
+  font-size: 11px;
+  color: var(--texto-suave);
+  background: var(--azul-50);
+  border: 1px solid var(--azul-100);
+  border-radius: 10px;
+  padding: 2px 8px;
+}
+
+.chat-msg-actions li::before {
+  content: '✓ ';
+  color: var(--azul-600);
+}
+
+/* ------------------------------------------------------------ Markdown ---- */
+
+/* El asistente responde en markdown: aqui se ajusta a lo estrecho del widget. */
+.markdown > *:first-child { margin-top: 0; }
+.markdown > *:last-child { margin-bottom: 0; }
+
+.markdown p { margin: 0 0 8px; }
+.markdown p:last-child { margin-bottom: 0; }
+
+.markdown strong { font-weight: 600; color: var(--texto); }
+
+.markdown ul,
+.markdown ol { margin: 0 0 8px; padding-left: 18px; }
+.markdown li { margin-bottom: 3px; }
+.markdown li:last-child { margin-bottom: 0; }
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4 {
+  margin: 10px 0 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.markdown code {
+  padding: 1px 5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  background: var(--superficie-sutil);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+}
+
+.markdown pre {
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  overflow-x: auto;
+  background: var(--superficie-sutil);
+  border: 1px solid var(--borde);
+  border-radius: var(--r-sm);
+}
+
+.markdown pre code { padding: 0; background: none; border: none; }
+
+/* Las tablas se desplazan dentro de la burbuja en vez de desbordarla. */
+.markdown__tabla { margin: 0 0 8px; overflow-x: auto; }
+
+.markdown table {
+  border-collapse: collapse;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.markdown th,
+.markdown td {
+  padding: 5px 9px;
+  text-align: left;
+  border: 1px solid var(--borde);
+}
+
+.markdown th {
+  font-weight: 600;
+  color: var(--texto-suave);
+  background: var(--superficie-sutil);
+}
+
+.markdown blockquote {
+  margin: 0 0 8px;
+  padding-left: 10px;
+  color: var(--texto-suave);
+  border-left: 2px solid var(--borde-fuerte);
+}
+
+.markdown hr { margin: 10px 0; border: none; border-top: 1px solid var(--borde); }
+
+/* Las burbujas del asistente ya no necesitan respetar saltos de linea del texto
+   plano: el markdown se encarga del espaciado. */
+.chat-msg.assistant .chat-msg-bubble { white-space: normal; }

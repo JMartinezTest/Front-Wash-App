@@ -1,277 +1,246 @@
-import React, { useState } from 'react';
-import './PredictionForm.css';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { FaChartLine, FaBookmark, FaCloudSun, FaCloudRain, FaCloud, FaHistory } from 'react-icons/fa';
 import { apiService } from '../../api/apiService';
+import PrevisionDia from '../../components/PrevisionDia';
+import '../../components/PrevisionDia.css';
+import './PredictionForm.css';
+
+const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+const DIAS_VISIBLES = {
+  Domingo: 'Domingo', Lunes: 'Lunes', Martes: 'Martes', Miercoles: 'Miércoles',
+  Jueves: 'Jueves', Viernes: 'Viernes', Sabado: 'Sábado',
+};
+const CLIMAS = [
+  { valor: 'Soleado', icono: <FaCloudSun /> },
+  { valor: 'Nublado', icono: <FaCloud /> },
+  { valor: 'Lluvioso', icono: <FaCloudRain /> },
+];
+
+
+const HORA_APERTURA = 8;
+const HORA_CIERRE = 20;
 
 const PredictionForm = () => {
-  const [formData, setFormData] = useState({
-    idCliente: '',
-    diaSemana: '',
-    hora: '',
-    clima: '',
-    temperatura: '',
-    tipoServicio: '',
-    historialVisitas: '',
-    promocionesActivas: '',
-  });
-  const [predictionResult, setPredictionResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const ahora = new Date();
 
-  const handleChange = (e) => {
+  // El formulario arranca con el momento actual: lo habitual es preguntar por hoy.
+  const [condiciones, setCondiciones] = useState({
+    diaSemana: DIAS[ahora.getDay()],
+    clima: 'Soleado',
+    temperatura: 22,
+    historialVisitas: 5,
+    promocionesActivas: 'No',
+  });
+  const [horaElegida, setHoraElegida] = useState(
+    Math.min(Math.max(ahora.getHours(), HORA_APERTURA), HORA_CIERRE)
+  );
+
+  // El clima real del lavadero evita tener que adivinarlo a mano.
+  const [climaReal, setClimaReal] = useState(null);
+  const [prevision, setPrevision] = useState(null);
+  const [cargando, setCargando] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const [error, setError] = useState('');
+  const [aviso, setAviso] = useState('');
+
+  useEffect(() => {
+    apiService.getWeather()
+      .then((c) => {
+        setClimaReal(c);
+        setCondiciones((p) => ({ ...p, clima: c.clima, temperatura: c.temperatura }));
+      })
+      .catch(() => setClimaReal(null));  // Sin clima se sigue pudiendo elegir a mano.
+  }, []);
+
+  const cambiar = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setCondiciones((p) => ({ ...p, [name]: value }));
+    setPrevision(null);
   };
 
-  const handleSubmit = async (e) => {
+  const calcular = async (e) => {
     e.preventDefault();
-    setError(null);
-    setPredictionResult(null);
-    setLoading(true);
-
+    setError(''); setAviso(''); setCargando(true);
     try {
-      const data = {
-        idCliente: parseInt(formData.idCliente) || 0,
-        diaSemana: formData.diaSemana,
-        hora: parseInt(formData.hora),
-        clima: formData.clima,
-        temperatura: Number(formData.temperatura),
-        tipoServicio: formData.tipoServicio,
-        historialVisitas: parseInt(formData.historialVisitas) || 0,
-        promocionesActivas: formData.promocionesActivas,
-      };
-
-      if (data.hora < 0 || data.hora > 23) {
-        throw new Error('La hora debe estar entre 0 y 23.');
-      }
-      if (data.temperatura < -50 || data.temperatura > 50) {
-        throw new Error('Temperatura debe estar entre -50 y 50 °C.');
-      }
-      if (data.historialVisitas < 0) {
-        throw new Error('Historial de visitas no puede ser negativo.');
-      }
-
-      const response = await apiService.predictDemand(data);
-      setPredictionResult(response);
+      const datos = await apiService.forecastDay({
+        ...condiciones,
+        temperatura: Number(condiciones.temperatura),
+        historialVisitas: Number(condiciones.historialVisitas),
+        horaInicio: HORA_APERTURA,
+        horaFin: HORA_CIERRE,
+      });
+      setPrevision(datos);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'No se pudo calcular la previsión.');
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
   };
 
+  // La consulta puntual sí queda registrada, para poder revisarla después.
+  const guardarConsulta = async () => {
+    setError(''); setAviso(''); setGuardando(true);
+    try {
+      const r = await apiService.predictDemand({
+        ...condiciones,
+        hora: horaElegida,
+        temperatura: Number(condiciones.temperatura),
+        historialVisitas: Number(condiciones.historialVisitas),
+      });
+      setAviso(`Guardado: a las ${horaElegida}:00 se espera demanda `
+        + `${r.prediccion === 'Si' ? 'alta' : 'normal'} (${r.confianza} de confianza). `
+        + `Puedes consultarlo en «Historial de predicciones».`);
+    } catch (err) {
+      setError(err.message || 'No se pudo guardar la consulta.');
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  const franjaElegida = prevision?.franjas.find((f) => f.hora === horaElegida);
+
   return (
-    <div className="prediction-form-container">
-      <div className="form-header">
-        <h2>Predicción de Demanda</h2>
-        <p className="form-subtitle">Complete el formulario para predecir la demanda del servicio de lavado</p>
+    <>
+      <div className="page-header">
+        <div className="page-header__titles">
+          <h1>Predicción de demanda</h1>
+          <p className="page-header__subtitle">
+            Estima en qué franjas del día habrá más afluencia, para reforzar personal o lanzar promociones.
+          </p>
+        </div>
+        <div className="page-header__actions">
+          <Link to="/prediction-history" className="btn btn--secondary">
+            <FaHistory /> Ver historial
+          </Link>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="prediction-form">
-        <div className="form-grid">
-          <div className="form-column">
-            <div className="form-field">
-              <label htmlFor="idCliente">
-                <span className="field-icon">👤</span>
-                ID Cliente
-              </label>
-              <input
-                type="number"
-                id="idCliente"
-                name="idCliente"
-                value={formData.idCliente}
-                onChange={handleChange}
-                min="0"
-                placeholder="ID del cliente"
-                required
-              />
-            </div>
+      {error && <div className="alert alert--error">{error}</div>}
+      {aviso && <div className="alert alert--success">{aviso}</div>}
 
-            <div className="form-field">
-              <label htmlFor="diaSemana">
-                <span className="field-icon">📅</span>
-                Día de la Semana
-              </label>
-              <select
-                id="diaSemana"
-                name="diaSemana"
-                value={formData.diaSemana}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione un día</option>
-                <option value="Lunes">Lunes</option>
-                <option value="Martes">Martes</option>
-                <option value="Miercoles">Miércoles</option>
-                <option value="Jueves">Jueves</option>
-                <option value="Viernes">Viernes</option>
-                <option value="Sabado">Sábado</option>
-                <option value="Domingo">Domingo</option>
-              </select>
-            </div>
+      <div className="prediccion">
+        <form className="card" onSubmit={calcular}>
+          <div className="card__header"><h2>Condiciones</h2></div>
+          <div className="card__body">
+            <div className="form-grid">
+              <div className="field">
+                <label htmlFor="diaSemana">Día</label>
+                <select id="diaSemana" name="diaSemana" value={condiciones.diaSemana} onChange={cambiar}>
+                  {DIAS.map((d) => <option key={d} value={d}>{DIAS_VISIBLES[d]}</option>)}
+                </select>
+              </div>
 
-            <div className="form-field">
-              <label htmlFor="hora">
-                <span className="field-icon">🕒</span>
-                Hora (0–23)
-              </label>
-              <input
-                type="number"
-                id="hora"
-                name="hora"
-                value={formData.hora}
-                onChange={handleChange}
-                min="0"
-                max="23"
-                placeholder="Hora del día (ej: 8, 14, 20)"
-                required
-              />
-            </div>
+              <div className="field">
+                <label htmlFor="temperatura">Temperatura (°C)</label>
+                {/* step="any": la temperatura del servicio meteorológico trae decimales
+                    arbitrarios (30.2); con un paso fijo el navegador bloqueaba el envío. */}
+                <input
+                  id="temperatura" name="temperatura" type="number" min="-50" max="50" step="any"
+                  value={condiciones.temperatura} onChange={cambiar} required
+                />
+              </div>
 
-            <div className="form-field">
-              <label htmlFor="temperatura">
-                <span className="field-icon">🌡️</span>
-                Temperatura (°C)
-              </label>
-              <input
-                type="number"
-                id="temperatura"
-                name="temperatura"
-                value={formData.temperatura}
-                onChange={handleChange}
-                step="0.1"
-                placeholder="Temperatura en grados Celsius"
-                required
-              />
-            </div>
-          </div>
+              <div className="field field--full">
+                <span className="field-label">
+                  Clima
+                  {climaReal && condiciones.clima === climaReal.clima
+                    && Number(condiciones.temperatura) === climaReal.temperatura && (
+                    <span className="field-opcional">ahora mismo en el lavadero</span>
+                  )}
+                </span>
+                <div className="opciones">
+                  {CLIMAS.map((c) => (
+                    <button
+                      type="button" key={c.valor}
+                      className={`opcion ${condiciones.clima === c.valor ? 'opcion--activa' : ''}`}
+                      onClick={() => { setCondiciones((p) => ({ ...p, clima: c.valor })); setPrevision(null); }}
+                    >
+                      {c.icono} {c.valor}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          <div className="form-column">
-            <div className="form-field">
-              <label htmlFor="clima">
-                <span className="field-icon">🌤️</span>
-                Clima
-              </label>
-              <select
-                id="clima"
-                name="clima"
-                value={formData.clima}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione el clima</option>
-                <option value="Soleado">Soleado</option>
-                <option value="Lluvioso">Lluvioso</option>
-                <option value="Nublado">Nublado</option>
-              </select>
-            </div>
+              <div className="field">
+                <label htmlFor="historialVisitas">Visitas previas del cliente</label>
+                <input
+                  id="historialVisitas" name="historialVisitas" type="number" min="0"
+                  value={condiciones.historialVisitas} onChange={cambiar} required
+                />
+                <span className="field-hint">Cuántas veces ha venido antes.</span>
+              </div>
 
-            <div className="form-field">
-              <label htmlFor="tipoServicio">
-                <span className="field-icon">🚿</span>
-                Tipo de Servicio
-              </label>
-              <select
-                id="tipoServicio"
-                name="tipoServicio"
-                value={formData.tipoServicio}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione el servicio</option>
-                <option value="Basico">Básico</option>
-                <option value="Completo">Completo</option>
-                <option value="Premium">Premium</option>
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="historialVisitas">
-                <span className="field-icon">📊</span>
-                Historial de Visitas
-              </label>
-              <input
-                type="number"
-                id="historialVisitas"
-                name="historialVisitas"
-                value={formData.historialVisitas}
-                onChange={handleChange}
-                min="0"
-                step="1"
-                placeholder="Número de visitas previas"
-                required
-              />
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="promocionesActivas">
-                <span className="field-icon">🏷️</span>
-                Promociones Activas
-              </label>
-              <select
-                id="promocionesActivas"
-                name="promocionesActivas"
-                value={formData.promocionesActivas}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione una opción</option>
-                <option value="Si">Sí</option>
-                <option value="No">No</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div className="form-actions">
-          <button type="submit" className="submit-button" disabled={loading}>
-            {loading ? (
-              <span className="loading-spinner"></span>
-            ) : (
-              <>
-                <span className="button-icon">🔮</span>
-                Predecir Demanda
-              </>
-            )}
-          </button>
-        </div>
-      </form>
-
-      {predictionResult && (
-        <div className="prediction-result">
-          <div className="result-header">
-            <span className="result-icon">✅</span>
-            <h3>Resultado de la Predicción</h3>
-          </div>
-          <div className="result-content">
-            <div className="result-item">
-              <span className="result-label">Clientes Estimados:</span>
-              <span className="result-value">{predictionResult.prediccion}</span>
-            </div>
-            <div className="result-item">
-              <span className="result-label">Confianza:</span>
-              <span className="result-value">{predictionResult.confianza}</span>
-              <div className="confidence-bar">
-                <div
-                  className="confidence-fill"
-                  style={{ width: predictionResult.confianza }}
-                ></div>
+              <div className="field">
+                <span className="field-label">¿Hay promoción activa?</span>
+                <div className="opciones">
+                  {['Si', 'No'].map((v) => (
+                    <button
+                      type="button" key={v}
+                      className={`opcion ${condiciones.promocionesActivas === v ? 'opcion--activa' : ''}`}
+                      onClick={() => { setCondiciones((p) => ({ ...p, promocionesActivas: v })); setPrevision(null); }}
+                    >
+                      {v === 'Si' ? 'Sí' : 'No'}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="result-item">
-              <span className="result-label">ID de Registro:</span>
-              <span className="result-value">{predictionResult.id}</span>
+
+            <div className="form-actions">
+              <button type="submit" className="btn btn--primary" disabled={cargando}>
+                <FaChartLine /> {cargando ? 'Calculando…' : 'Ver previsión del día'}
+              </button>
             </div>
           </div>
-        </div>
-      )}
+        </form>
 
-      {error && (
-        <div className="error-message">
-          <span className="error-icon">⚠️</span>
-          <p>{error}</p>
-        </div>
-      )}
-    </div>
+        <section className="card">
+          <div className="card__header">
+            <h2>Previsión de {DIAS_VISIBLES[condiciones.diaSemana]}</h2>
+            <p className="page-header__subtitle">De {HORA_APERTURA}:00 a {HORA_CIERRE}:00</p>
+          </div>
+          <div className="card__body">
+            {!prevision ? (
+              <div className="state">
+                <span className="state__icon"><FaChartLine /></span>
+                <p className="state__title">Sin previsión todavía</p>
+                <p className="state__text">
+                  Ajusta las condiciones y pulsa «Ver previsión del día» para saber en qué
+                  horas se espera más afluencia.
+                </p>
+              </div>
+            ) : (
+              <>
+                <PrevisionDia
+                  franjas={prevision.franjas}
+                  horaDestacada={horaElegida}
+                  onElegirHora={setHoraElegida}
+                />
+
+                {franjaElegida && (
+                  <div className={`detalle ${franjaElegida.demandaAlta ? 'detalle--alta' : ''}`}>
+                    <div>
+                      <p className="detalle__hora">{franjaElegida.hora}:00</p>
+                      <p className="detalle__texto">
+                        Demanda <strong>{franjaElegida.demandaAlta ? 'alta' : 'normal'}</strong>
+                        {' '}· {franjaElegida.confianza}% de confianza
+                      </p>
+                    </div>
+                    <button
+                      type="button" className="btn btn--secondary btn--sm"
+                      onClick={guardarConsulta} disabled={guardando}
+                    >
+                      <FaBookmark /> {guardando ? 'Guardando…' : 'Guardar en el historial'}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </section>
+      </div>
+    </>
   );
 };
 

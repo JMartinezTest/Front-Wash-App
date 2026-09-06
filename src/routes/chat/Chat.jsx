@@ -1,6 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { apiService } from '../../api/apiService';
 import './Chat.css';
+
+// El backend devuelve los nombres de las herramientas que ejecuto; aqui se traducen
+// a algo que el usuario pueda leer debajo de la respuesta.
+const ETIQUETAS_DE_ACCION = {
+  listar_servicios: 'Consultó los servicios',
+  buscar_clientes: 'Buscó en clientes',
+  buscar_vehiculos: 'Buscó en vehículos',
+  listar_empleados: 'Consultó los empleados',
+  consultar_lavados: 'Consultó el historial de lavados',
+  calcular_comision_empleado: 'Calculó una comisión',
+  resumen_del_negocio: 'Consultó el resumen del negocio',
+  registrar_cliente: 'Registró un cliente',
+  registrar_vehiculo: 'Registró un vehículo',
+  registrar_empleado: 'Registró un empleado',
+  registrar_lavado: 'Registró un lavado',
+};
 
 const Chat = () => {
   const [open, setOpen] = useState(false);
@@ -29,8 +47,16 @@ const Chat = () => {
     setLoading(true);
 
     try {
-      const data = await apiService.sendChatMessage(text);
-      setMessages((prev) => [...prev, { role: 'assistant', text: data.response }]);
+      // Se manda la conversacion previa para que el asistente mantenga el contexto.
+      const history = messages
+        .filter((msg) => !msg.text.startsWith('⚠️'))
+        .map(({ role, text: content }) => ({ role, text: content }));
+
+      const data = await apiService.sendChatMessage(text, history);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', text: data.response, actions: data.actions || [] },
+      ]);
     } catch (err) {
       let errorMsg = 'Lo siento, ocurrió un error al conectar con el asistente.';
       try {
@@ -54,7 +80,7 @@ const Chat = () => {
               <div className="chat-avatar-sm">SF</div>
               <div>
                 <p className="chat-popup-name">Asistente San Felipe</p>
-                <span className="chat-popup-status">● En línea · Gemini AI</span>
+                <span className="chat-popup-status">● En línea</span>
               </div>
             </div>
             <button className="chat-close-btn" onClick={() => setOpen(false)}>✕</button>
@@ -64,7 +90,38 @@ const Chat = () => {
             {messages.map((msg, i) => (
               <div key={i} className={`chat-msg ${msg.role}`}>
                 {msg.role === 'assistant' && <div className="chat-avatar-xs">SF</div>}
-                <div className="chat-msg-bubble">{msg.text}</div>
+                <div className="chat-msg-content">
+                  <div className="chat-msg-bubble">
+                    {msg.role === 'assistant' ? (
+                      <div className="markdown">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            // Las tablas pueden ser mas anchas que el widget.
+                            table: ({ node, ...props }) => (
+                              <div className="markdown__tabla"><table {...props} /></div>
+                            ),
+                            // Cualquier enlace que sugiera el modelo se abre aparte.
+                            a: ({ node, ...props }) => (
+                              <a {...props} target="_blank" rel="noopener noreferrer" />
+                            ),
+                          }}
+                        >
+                          {msg.text}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      msg.text
+                    )}
+                  </div>
+                  {msg.actions?.length > 0 && (
+                    <ul className="chat-msg-actions">
+                      {msg.actions.map((accion, j) => (
+                        <li key={j}>{ETIQUETAS_DE_ACCION[accion] || accion}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
             ))}
             {loading && (

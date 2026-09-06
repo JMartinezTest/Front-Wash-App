@@ -1,0 +1,85 @@
+/* Visualización de la previsión por franjas horarias. */
+
+.prevision__resumen {
+  padding: var(--e3) var(--e4);
+  margin-bottom: var(--e5);
+  font-size: 13.5px;
+  color: var(--texto-suave);
+  background: var(--superficie-sutil);
+  border-radius: var(--r-md);
+}
+
+.prevision__resumen strong { color: var(--texto); }
+
+.prevision__franjas {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 148px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.prevision__franjas li { flex: 1; height: 100%; }
+
+/* Cada franja es una barra: el color dice el nivel y la altura la confianza. */
+.franja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+
+.franja__barra {
+  width: 100%;
+  background: var(--borde-fuerte);
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+  transition: background .15s, transform .15s;
+}
+
+.franja--alta .franja__barra { background: var(--azul-600); }
+
+.franja:hover .franja__barra { transform: scaleY(1.03); transform-origin: bottom; }
+
+.franja--elegida .franja__barra { outline: 2px solid var(--azul-800); outline-offset: 1px; }
+
+.franja__hora {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--texto-tenue);
+}
+
+.franja--alta .franja__hora { color: var(--texto-suave); font-weight: 600; }
+
+.prevision__leyenda {
+  display: flex;
+  align-items: center;
+  gap: var(--e4);
+  flex-wrap: wrap;
+  margin-top: var(--e4);
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.prevision__leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+
+.punto {
+  width: 9px;
+  height: 9px;
+  background: var(--borde-fuerte);
+  border-radius: 2px;
+}
+
+.punto--alta { background: var(--azul-600); }
+
+.prevision__nota { margin-left: auto; color: var(--texto-tenue); }
+
