@@ -20,5 +20,3 @@ package-lock.json
 bun.lock
 yarn.lock
 
-# Marcador que genera pnpm; este proyecto no es un monorepo
-pnpm-workspace.yaml

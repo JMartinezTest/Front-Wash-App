@@ -1,0 +1,9 @@
+# pnpm 11 aborta la instalacion si algun paquete tiene scripts de instalacion sin
+# una decision explicita. core-js solo imprime un mensaje, no compila nada.
+# El campo "packages" es obligatorio: sin el, pnpm falla con
+# "packages field missing or empty".
+packages:
+  - .
+
+allowBuilds:
+  core-js: false
