@@ -11,7 +11,7 @@ function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login, sesionCaducada } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,6 +66,12 @@ function LoginPage() {
             <h2>Iniciar sesión</h2>
             <p>Accede con tu cuenta para gestionar el lavadero.</p>
           </div>
+
+          {sesionCaducada && !error && (
+            <div className="alert alert--error">
+              Tu sesión ha caducado. Vuelve a iniciar sesión para continuar.
+            </div>
+          )}
 
           {error && <div className="alert alert--error">{error}</div>}
 

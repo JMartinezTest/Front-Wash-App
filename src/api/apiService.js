@@ -18,6 +18,18 @@ const leerCuerpo = async (response) => {
   }
 };
 
+/**
+ * Que hacer cuando el backend rechaza la sesion.
+ *
+ * apiService vive fuera de React, asi que el proveedor de autenticacion registra
+ * aqui su reaccion en lugar de que esta capa sepa navegar.
+ */
+let alCaducarSesion = () => {};
+
+export const registrarCaducidadDeSesion = (manejador) => {
+  alCaducarSesion = manejador;
+};
+
 const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
 
@@ -34,6 +46,16 @@ const fetchWithAuth = async (endpoint, options = {}) => {
     });
 
     const cuerpo = await leerCuerpo(response);
+
+    if (response.status === 401 || response.status === 403) {
+      // Estos dos codigos solo salen de Spring Security: significan que no hay
+      // token, que caduco o que ya no identifica a nadie. Los fallos de negocio
+      // llegan como 400, 404 o 500 desde ApiExceptionHandler, asi que aqui no se
+      // confunde una sesion muerta con un dato invalido.
+      localStorage.removeItem("token");
+      alCaducarSesion();
+      throw new Error("Tu sesión ha caducado. Vuelve a iniciar sesión.");
+    }
 
     if (!response.ok) {
       // El backend responde {"error": "..."}; se extrae el mensaje para no
