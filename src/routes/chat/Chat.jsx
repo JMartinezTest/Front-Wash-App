@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { apiService } from '../../api/apiService';
+import { huboEscritura, avisarDatosActualizados } from '../../hooks/datosDelNegocio';
 import './Chat.css';
 
 // El backend devuelve los nombres de las herramientas que ejecuto; aqui se traducen
@@ -18,6 +19,14 @@ const ETIQUETAS_DE_ACCION = {
   registrar_vehiculo: 'Registró un vehículo',
   registrar_empleado: 'Registró un empleado',
   registrar_lavado: 'Registró un lavado',
+  actualizar_cliente: 'Actualizó un cliente',
+  actualizar_vehiculo: 'Actualizó un vehículo',
+  actualizar_empleado: 'Actualizó un empleado',
+  actualizar_servicio: 'Actualizó un servicio',
+  actualizar_lavado: 'Actualizó un lavado',
+  eliminar_registro: 'Eliminó un registro',
+  clima_actual: 'Consultó el clima',
+  consultar_predicciones: 'Consultó el historial de predicciones',
 };
 
 const Chat = () => {
@@ -57,6 +66,12 @@ const Chat = () => {
         ...prev,
         { role: 'assistant', text: data.response, actions: data.actions || [] },
       ]);
+
+      // Si el asistente escribio en la base de datos, la pantalla de detras esta
+      // enseñando datos viejos: se le avisa para que se recargue sola.
+      if (huboEscritura(data.actions)) {
+        avisarDatosActualizados();
+      }
     } catch (err) {
       let errorMsg = 'Lo siento, ocurrió un error al conectar con el asistente.';
       try {

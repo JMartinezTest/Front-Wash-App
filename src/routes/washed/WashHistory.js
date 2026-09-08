@@ -4,6 +4,7 @@ import { FaPlus } from 'react-icons/fa';
 import { apiService } from '../../api/apiService';
 import DataTable from '../../components/DataTable';
 import PageState from '../../components/PageState';
+import { useDatosActualizados } from '../../hooks/datosDelNegocio';
 import { dinero, fechaCorta } from '../../utils/formato';
 
 const WashHistory = () => {
@@ -40,6 +41,9 @@ const WashHistory = () => {
   };
 
   useEffect(() => { fetchAllData(); }, []);
+
+  // El asistente puede cambiar estos datos desde su panel flotante.
+  useDatosActualizados(fetchAllData);
 
   const nombreServicio = (id) => services.find((s) => s.id === id)?.name;
   const nombreEmpleado = (id) => {

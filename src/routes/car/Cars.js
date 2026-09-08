@@ -4,6 +4,7 @@ import { FaPlus } from 'react-icons/fa';
 import { apiService } from '../../api/apiService';
 import DataTable from '../../components/DataTable';
 import PageState from '../../components/PageState';
+import { useDatosActualizados } from '../../hooks/datosDelNegocio';
 import { AltaVehiculo } from '../../components/AltaRapida';
 
 const Cars = () => {
@@ -31,6 +32,9 @@ const Cars = () => {
   };
 
   useEffect(() => { fetchCars(); }, []);
+
+  // El asistente puede cambiar estos datos desde su panel flotante.
+  useDatosActualizados(fetchCars);
 
   const handleDelete = async ({ id, licencePlate }) => {
     if (!window.confirm(`¿Eliminar el vehículo con placa ${licencePlate}?`)) return;

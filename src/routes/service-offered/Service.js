@@ -4,6 +4,7 @@ import { FaPlus } from 'react-icons/fa';
 import { apiService } from '../../api/apiService';
 import DataTable from '../../components/DataTable';
 import PageState from '../../components/PageState';
+import { useDatosActualizados } from '../../hooks/datosDelNegocio';
 import { AltaServicio } from '../../components/AltaRapida';
 import { dinero } from '../../utils/formato';
 
@@ -27,6 +28,9 @@ const Services = () => {
   };
 
   useEffect(() => { fetchServices(); }, []);
+
+  // El asistente puede cambiar estos datos desde su panel flotante.
+  useDatosActualizados(fetchServices);
 
   const handleDelete = async ({ id, name }) => {
     if (!window.confirm(`¿Eliminar el servicio "${name}"?`)) return;

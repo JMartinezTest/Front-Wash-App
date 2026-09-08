@@ -5,6 +5,7 @@ import {
 } from "react-icons/fa";
 import { apiService } from "../../api/apiService";
 import { dinero, esHoy } from "../../utils/formato";
+import { useDatosActualizados } from "../../hooks/datosDelNegocio";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -15,27 +16,30 @@ const Dashboard = () => {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const cargar = async () => {
-      try {
-        const [c, l, cl, em] = await Promise.all([
-          apiService.getCounts(),
-          apiService.getWashedRecords(),
-          apiService.getClients(),
-          apiService.getEmployees(),
-        ]);
-        setConteos(c);
-        setLavados(Array.isArray(l) ? l : []);
-        setClientes(Array.isArray(cl) ? cl : []);
-        setEmpleados(Array.isArray(em) ? em : []);
-      } catch (e) {
-        setError(e.message || "No se pudieron cargar los datos.");
-      } finally {
-        setCargando(false);
-      }
-    };
-    cargar();
-  }, []);
+  const cargar = async () => {
+    try {
+      const [c, l, cl, em] = await Promise.all([
+        apiService.getCounts(),
+        apiService.getWashedRecords(),
+        apiService.getClients(),
+        apiService.getEmployees(),
+      ]);
+      setConteos(c);
+      setLavados(Array.isArray(l) ? l : []);
+      setClientes(Array.isArray(cl) ? cl : []);
+      setEmpleados(Array.isArray(em) ? em : []);
+      setError("");
+    } catch (e) {
+      setError(e.message || "No se pudieron cargar los datos.");
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  useEffect(() => { cargar(); }, []);
+
+  // El asistente puede cambiar estos datos desde su panel flotante.
+  useDatosActualizados(cargar);
 
   const lavadosDeHoy = lavados.filter((l) => esHoy(l.date));
   const ingresosDeHoy = lavadosDeHoy.reduce((a, l) => a + (l.total || 0), 0);

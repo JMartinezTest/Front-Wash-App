@@ -4,6 +4,7 @@ import { FaPlus } from 'react-icons/fa';
 import { apiService } from '../../api/apiService';
 import DataTable from '../../components/DataTable';
 import PageState from '../../components/PageState';
+import { useDatosActualizados } from '../../hooks/datosDelNegocio';
 import { AltaEmpleado } from '../../components/AltaRapida';
 
 const Employees = () => {
@@ -26,6 +27,9 @@ const Employees = () => {
   };
 
   useEffect(() => { fetchEmployees(); }, []);
+
+  // El asistente puede cambiar estos datos desde su panel flotante.
+  useDatosActualizados(fetchEmployees);
 
   const handleDelete = async ({ id, name, lastName }) => {
     if (!window.confirm(`¿Eliminar a ${name} ${lastName}?`)) return;

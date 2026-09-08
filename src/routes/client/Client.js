@@ -4,6 +4,7 @@ import { FaPlus } from 'react-icons/fa';
 import { apiService } from '../../api/apiService';
 import DataTable from '../../components/DataTable';
 import PageState from '../../components/PageState';
+import { useDatosActualizados } from '../../hooks/datosDelNegocio';
 import { AltaCliente } from '../../components/AltaRapida';
 
 const Clients = () => {
@@ -26,6 +27,9 @@ const Clients = () => {
   };
 
   useEffect(() => { fetchClients(); }, []);
+
+  // El asistente puede cambiar estos datos desde su panel flotante.
+  useDatosActualizados(fetchClients);
 
   const handleDelete = async ({ id, name, lastName }) => {
     if (!window.confirm(`¿Eliminar a ${name} ${lastName}?`)) return;
