@@ -1,5 +1,23 @@
 import { API_BASE_URL } from "./config";
 
+/**
+ * Lee el cuerpo de una respuesta sin dar por hecho que es JSON.
+ *
+ * No todos los endpoints responden JSON: los DELETE devuelven un mensaje en
+ * texto plano ("Cliente ... eliminado.") y algunos pueden no devolver nada.
+ * Hacer response.json() a ciegas hacía fallar el borrado en la interfaz aunque
+ * el registro se hubiera eliminado.
+ */
+const leerCuerpo = async (response) => {
+  const texto = await response.text();
+  if (!texto) return null;
+  try {
+    return JSON.parse(texto);
+  } catch {
+    return texto;
+  }
+};
+
 const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
 
@@ -15,21 +33,16 @@ const fetchWithAuth = async (endpoint, options = {}) => {
       headers,
     });
 
+    const cuerpo = await leerCuerpo(response);
+
     if (!response.ok) {
-      const errorText = await response.text();
       // El backend responde {"error": "..."}; se extrae el mensaje para no
       // enseñar el JSON en bruto en la interfaz.
-      let mensaje = errorText;
-      try {
-        const cuerpo = JSON.parse(errorText);
-        if (cuerpo?.error) mensaje = cuerpo.error;
-      } catch {
-        // No era JSON: se usa el texto tal cual.
-      }
+      const mensaje = typeof cuerpo === "string" ? cuerpo : cuerpo?.error;
       throw new Error(mensaje || "Error en la solicitud");
     }
 
-    return response.json();
+    return cuerpo;
   } catch (error) {
     console.error("API Error:", error);
     throw error;
@@ -132,6 +145,8 @@ export const apiService = {
     fetchWithAuth(`/washed/${id}`, {
       method: "PUT",
       body: JSON.stringify({
+        // La fecha solo se puede corregir al editar: al registrar la pone el backend.
+        date: record.date,
         client: record.clientId,
         employee: record.employeeId,
         car: record.carId,

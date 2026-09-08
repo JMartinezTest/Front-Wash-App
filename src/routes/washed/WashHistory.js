@@ -165,6 +165,7 @@ const WashHistory = () => {
         columns={columns}
         data={washes}
         onDelete={handleDelete}
+        onEdit={(w) => navigate(`/washes/edit/${w.id}`)}
         emptyMessage="Todavía no hay lavados"
         emptyHint="Registra el primer lavado para empezar a llevar el historial y las comisiones."
         emptyAction={
